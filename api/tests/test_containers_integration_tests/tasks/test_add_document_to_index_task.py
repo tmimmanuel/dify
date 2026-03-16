@@ -8,6 +8,7 @@ from core.rag.index_processor.constant.index_type import IndexStructureType
 from extensions.ext_redis import redis_client
 from models import Account, Tenant, TenantAccountJoin, TenantAccountRole
 from models.dataset import Dataset, DatasetAutoDisableLog, Document, DocumentSegment
+from models.enums import DataSourceType, DocumentCreatedFrom, IndexingStatus, SegmentStatus
 from tasks.add_document_to_index_task import add_document_to_index_task
 
 
@@ -79,7 +80,7 @@ class TestAddDocumentToIndexTask:
             tenant_id=tenant.id,
             name=fake.company(),
             description=fake.text(max_nb_chars=100),
-            data_source_type="upload_file",
+            data_source_type=DataSourceType.UPLOAD_FILE,
             indexing_technique="high_quality",
             created_by=account.id,
         )
@@ -92,12 +93,12 @@ class TestAddDocumentToIndexTask:
             tenant_id=tenant.id,
             dataset_id=dataset.id,
             position=1,
-            data_source_type="upload_file",
+            data_source_type=DataSourceType.UPLOAD_FILE,
             batch="test_batch",
             name=fake.file_name(),
-            created_from="web",
+            created_from=DocumentCreatedFrom.WEB,
             created_by=account.id,
-            indexing_status="completed",
+            indexing_status=IndexingStatus.COMPLETED,
             enabled=True,
             doc_form=IndexStructureType.PARAGRAPH_INDEX,
         )
@@ -137,7 +138,7 @@ class TestAddDocumentToIndexTask:
                 index_node_id=f"node_{i}",
                 index_node_hash=f"hash_{i}",
                 enabled=False,
-                status="completed",
+                status=SegmentStatus.COMPLETED,
                 created_by=document.created_by,
             )
             db_session_with_containers.add(segment)
@@ -297,7 +298,7 @@ class TestAddDocumentToIndexTask:
         )
 
         # Set invalid indexing status
-        document.indexing_status = "parsing"
+        document.indexing_status = IndexingStatus.PARSING
         db_session_with_containers.commit()
 
         # Act: Execute the task
@@ -460,7 +461,7 @@ class TestAddDocumentToIndexTask:
                 index_node_id=f"node_{i}",
                 index_node_hash=f"hash_{i}",
                 enabled=True,  # Already enabled
-                status="completed",
+                status=SegmentStatus.COMPLETED,
                 created_by=document.created_by,
             )
             db_session_with_containers.add(segment)
@@ -482,7 +483,7 @@ class TestAddDocumentToIndexTask:
         mock_external_service_dependencies["index_processor"].load.assert_called_once()
 
         # Verify the load method was called with all completed segments
-        # (implementation doesn't filter by enabled status, only by status="completed")
+        # (implementation doesn't filter by enabled status, only by status=SegmentStatus.COMPLETED)
         call_args = mock_external_service_dependencies["index_processor"].load.call_args
         assert call_args is not None
         documents = call_args[0][1]  # Second argument should be documents list
@@ -630,7 +631,7 @@ class TestAddDocumentToIndexTask:
         fake = Faker()
         segments = []
 
-        # Segment 1: Should be processed (enabled=False, status="completed")
+        # Segment 1: Should be processed (enabled=False, status=COMPLETED)
         segment1 = DocumentSegment(
             id=fake.uuid4(),
             tenant_id=document.tenant_id,
@@ -643,14 +644,14 @@ class TestAddDocumentToIndexTask:
             index_node_id="node_0",
             index_node_hash="hash_0",
             enabled=False,
-            status="completed",
+            status=SegmentStatus.COMPLETED,
             created_by=document.created_by,
         )
         db_session_with_containers.add(segment1)
         segments.append(segment1)
 
-        # Segment 2: Should be processed (enabled=True, status="completed")
-        # Note: Implementation doesn't filter by enabled status, only by status="completed"
+        # Segment 2: Should be processed (enabled=True, status=COMPLETED)
+        # Note: Implementation doesn't filter by enabled status, only by status=COMPLETED
         segment2 = DocumentSegment(
             id=fake.uuid4(),
             tenant_id=document.tenant_id,
@@ -663,13 +664,13 @@ class TestAddDocumentToIndexTask:
             index_node_id="node_1",
             index_node_hash="hash_1",
             enabled=True,  # Already enabled, but will still be processed
-            status="completed",
+            status=SegmentStatus.COMPLETED,
             created_by=document.created_by,
         )
         db_session_with_containers.add(segment2)
         segments.append(segment2)
 
-        # Segment 3: Should NOT be processed (enabled=False, status="processing")
+        # Segment 3: Should NOT be processed (enabled=False, status=INDEXING)
         segment3 = DocumentSegment(
             id=fake.uuid4(),
             tenant_id=document.tenant_id,
@@ -682,13 +683,13 @@ class TestAddDocumentToIndexTask:
             index_node_id="node_2",
             index_node_hash="hash_2",
             enabled=False,
-            status="processing",  # Not completed
+            status=SegmentStatus.INDEXING,  # Not completed
             created_by=document.created_by,
         )
         db_session_with_containers.add(segment3)
         segments.append(segment3)
 
-        # Segment 4: Should be processed (enabled=False, status="completed")
+        # Segment 4: Should be processed (enabled=False, status=COMPLETED)
         segment4 = DocumentSegment(
             id=fake.uuid4(),
             tenant_id=document.tenant_id,
@@ -701,7 +702,7 @@ class TestAddDocumentToIndexTask:
             index_node_id="node_3",
             index_node_hash="hash_3",
             enabled=False,
-            status="completed",
+            status=SegmentStatus.COMPLETED,
             created_by=document.created_by,
         )
         db_session_with_containers.add(segment4)
@@ -726,7 +727,7 @@ class TestAddDocumentToIndexTask:
         call_args = mock_external_service_dependencies["index_processor"].load.call_args
         assert call_args is not None
         documents = call_args[0][1]  # Second argument should be documents list
-        assert len(documents) == 3  # 3 segments with status="completed" should be processed
+        assert len(documents) == 3  # 3 segments with status=COMPLETED should be processed
 
         # Verify correct segments were processed (by position order)
         # Segments 1, 2, 4 should be processed (positions 0, 1, 3)
@@ -784,7 +785,7 @@ class TestAddDocumentToIndexTask:
 
             # Reset document state
             document.enabled = True
-            document.indexing_status = "completed"
+            document.indexing_status = IndexingStatus.COMPLETED
             document.error = None
             document.disabled_at = None
             db_session_with_containers.commit()

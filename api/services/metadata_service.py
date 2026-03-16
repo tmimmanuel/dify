@@ -7,6 +7,7 @@ from extensions.ext_redis import redis_client
 from libs.datetime_utils import naive_utc_now
 from libs.login import current_account_with_tenant
 from models.dataset import Dataset, DatasetMetadata, DatasetMetadataBinding
+from models.enums import DatasetMetadataType
 from services.dataset_service import DocumentService
 from services.entities.knowledge_entities.knowledge_entities import (
     MetadataArgs,
@@ -36,7 +37,7 @@ class MetadataService:
         metadata = DatasetMetadata(
             tenant_id=current_tenant_id,
             dataset_id=dataset_id,
-            type=metadata_args.type,
+            type=DatasetMetadataType(metadata_args.type),
             name=metadata_args.name,
             created_by=current_user.id,
         )

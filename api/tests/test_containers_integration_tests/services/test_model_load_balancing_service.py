@@ -146,7 +146,7 @@ class TestModelLoadBalancingService:
             tenant_id=tenant_id,
             provider_name="openai",
             model_name="gpt-3.5-turbo",
-            model_type="text-generation",  # Use the origin model type that matches the query
+            model_type="llm",  # Use the ModelType enum value that matches the query
             enabled=True,
             load_balancing_enabled=False,
         )
@@ -303,7 +303,7 @@ class TestModelLoadBalancingService:
             tenant_id=tenant.id,
             provider_name="openai",
             model_name="gpt-3.5-turbo",
-            model_type="text-generation",  # Use the origin model type that matches the query
+            model_type="llm",  # Use the ModelType enum value that matches the query
             name="config1",
             encrypted_config='{"api_key": "test_key"}',
             enabled=True,
@@ -422,7 +422,7 @@ class TestModelLoadBalancingService:
             tenant_id=tenant.id,
             provider_name="openai",
             model_name="gpt-3.5-turbo",
-            model_type="text-generation",  # Use the origin model type that matches the query
+            model_type="llm",  # Use the ModelType enum value that matches the query
             name="config1",
             encrypted_config='{"api_key": "test_key"}',
             enabled=True,

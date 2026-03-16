@@ -14,6 +14,7 @@ from core.rag.models.document import ChildDocument, Document
 from extensions.ext_database import db
 from models.dataset import Dataset, DatasetCollectionBinding, DatasetMetadata, DatasetMetadataBinding, DocumentSegment
 from models.dataset import Document as DatasetDocument
+from models.enums import DatasetMetadataType
 from models.model import App, AppAnnotationSetting, MessageAnnotation
 
 
@@ -430,7 +431,7 @@ def old_metadata_migration():
                                 tenant_id=document.tenant_id,
                                 dataset_id=document.dataset_id,
                                 name=key,
-                                type="string",
+                                type=DatasetMetadataType.STRING,
                                 created_by=document.created_by,
                             )
                             db.session.add(dataset_metadata)

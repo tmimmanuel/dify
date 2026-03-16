@@ -35,6 +35,7 @@ from extensions.ext_redis import redis_client
 from factories import variable_factory
 from models import Account
 from models.dataset import Dataset, DatasetCollectionBinding, Pipeline
+from models.enums import CollectionBindingType
 from models.workflow import Workflow, WorkflowType
 from services.entities.knowledge_entities.rag_pipeline_entities import (
     IconInfo,
@@ -334,7 +335,7 @@ class RagPipelineDslService:
                                 provider_name=knowledge_configuration.embedding_model_provider,
                                 model_name=knowledge_configuration.embedding_model,
                                 collection_name=Dataset.gen_collection_name_by_id(str(uuid.uuid4())),
-                                type="dataset",
+                                type=CollectionBindingType.DATASET,
                             )
                             self._session.add(dataset_collection_binding)
                             self._session.commit()
@@ -471,7 +472,7 @@ class RagPipelineDslService:
                                 provider_name=knowledge_configuration.embedding_model_provider,
                                 model_name=knowledge_configuration.embedding_model,
                                 collection_name=Dataset.gen_collection_name_by_id(str(uuid.uuid4())),
-                                type="dataset",
+                                type=CollectionBindingType.DATASET,
                             )
                             self._session.add(dataset_collection_binding)
                             self._session.commit()

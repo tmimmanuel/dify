@@ -10,6 +10,7 @@ from core.rag.models.document import Document
 from extensions.ext_redis import redis_client
 from libs.datetime_utils import naive_utc_now
 from models.dataset import DocumentSegment
+from models.enums import SegmentStatus
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,7 @@ def create_segment_to_index_task(segment_id: str, keywords: list[str] | None = N
             logger.exception("create segment to index failed")
             segment.enabled = False
             segment.disabled_at = naive_utc_now()
-            segment.status = "error"
+            segment.status = SegmentStatus.ERROR
             segment.error = str(e)
             session.commit()
         finally:

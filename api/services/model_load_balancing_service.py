@@ -19,6 +19,7 @@ from dify_graph.model_runtime.entities.provider_entities import (
 from dify_graph.model_runtime.model_providers.model_provider_factory import ModelProviderFactory
 from extensions.ext_database import db
 from libs.datetime_utils import naive_utc_now
+from models.enums import CredentialSourceType
 from models.provider import LoadBalancingModelConfig, ProviderCredential, ProviderModelCredential
 
 logger = logging.getLogger(__name__)
@@ -113,7 +114,7 @@ class ModelLoadBalancingService:
             .where(
                 LoadBalancingModelConfig.tenant_id == tenant_id,
                 LoadBalancingModelConfig.provider_name == provider_configuration.provider.provider,
-                LoadBalancingModelConfig.model_type == model_type_enum.to_origin_model_type(),
+                LoadBalancingModelConfig.model_type == model_type_enum,
                 LoadBalancingModelConfig.model_name == model,
                 or_(
                     LoadBalancingModelConfig.credential_source_type == credential_source_type,
@@ -238,7 +239,7 @@ class ModelLoadBalancingService:
             .where(
                 LoadBalancingModelConfig.tenant_id == tenant_id,
                 LoadBalancingModelConfig.provider_name == provider_configuration.provider.provider,
-                LoadBalancingModelConfig.model_type == model_type_enum.to_origin_model_type(),
+                LoadBalancingModelConfig.model_type == model_type_enum,
                 LoadBalancingModelConfig.model_name == model,
                 LoadBalancingModelConfig.id == config_id,
             )
@@ -286,7 +287,7 @@ class ModelLoadBalancingService:
         inherit_config = LoadBalancingModelConfig(
             tenant_id=tenant_id,
             provider_name=provider,
-            model_type=model_type.to_origin_model_type(),
+            model_type=model_type,
             model_name=model,
             name="__inherit__",
         )
@@ -326,7 +327,7 @@ class ModelLoadBalancingService:
             select(LoadBalancingModelConfig).where(
                 LoadBalancingModelConfig.tenant_id == tenant_id,
                 LoadBalancingModelConfig.provider_name == provider_configuration.provider.provider,
-                LoadBalancingModelConfig.model_type == model_type_enum.to_origin_model_type(),
+                LoadBalancingModelConfig.model_type == model_type_enum,
                 LoadBalancingModelConfig.model_name == model,
             )
         ).all()
@@ -366,7 +367,7 @@ class ModelLoadBalancingService:
                             tenant_id=tenant_id,
                             provider_name=provider_configuration.provider.provider,
                             model_name=model,
-                            model_type=model_type_enum.to_origin_model_type(),
+                            model_type=model_type_enum,
                         )
                         .first()
                     )
@@ -421,12 +422,16 @@ class ModelLoadBalancingService:
                     raise ValueError("Invalid load balancing config name")
 
                 if credential_id:
-                    credential_source = "provider" if config_from == "predefined-model" else "custom_model"
+                    credential_source = (
+                        CredentialSourceType.PROVIDER
+                        if config_from == "predefined-model"
+                        else CredentialSourceType.CUSTOM_MODEL
+                    )
                     assert credential_record is not None
                     load_balancing_model_config = LoadBalancingModelConfig(
                         tenant_id=tenant_id,
                         provider_name=provider_configuration.provider.provider,
-                        model_type=model_type_enum.to_origin_model_type(),
+                        model_type=ModelType(model_type_enum),
                         model_name=model,
                         name=credential_record.credential_name,
                         encrypted_config=credential_record.encrypted_config,
@@ -454,7 +459,7 @@ class ModelLoadBalancingService:
                     load_balancing_model_config = LoadBalancingModelConfig(
                         tenant_id=tenant_id,
                         provider_name=provider_configuration.provider.provider,
-                        model_type=model_type_enum.to_origin_model_type(),
+                        model_type=ModelType(model_type_enum),
                         model_name=model,
                         name=name,
                         encrypted_config=json.dumps(credentials),
@@ -509,7 +514,7 @@ class ModelLoadBalancingService:
                 .where(
                     LoadBalancingModelConfig.tenant_id == tenant_id,
                     LoadBalancingModelConfig.provider_name == provider,
-                    LoadBalancingModelConfig.model_type == model_type_enum.to_origin_model_type(),
+                    LoadBalancingModelConfig.model_type == model_type_enum,
                     LoadBalancingModelConfig.model_name == model,
                     LoadBalancingModelConfig.id == config_id,
                 )

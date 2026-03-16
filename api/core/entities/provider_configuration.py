@@ -383,7 +383,7 @@ class ProviderConfiguration(BaseModel):
                 ProviderModelCredential.tenant_id == self.tenant_id,
                 ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                 ProviderModelCredential.model_name == model,
-                ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                ProviderModelCredential.model_type == model_type,
             ),
         )
 
@@ -721,7 +721,7 @@ class ProviderConfiguration(BaseModel):
             ProviderModel.tenant_id == self.tenant_id,
             ProviderModel.provider_name.in_(provider_names),
             ProviderModel.model_name == model,
-            ProviderModel.model_type == model_type.to_origin_model_type(),
+            ProviderModel.model_type == model_type,
         )
 
         return session.execute(stmt).scalar_one_or_none()
@@ -746,7 +746,7 @@ class ProviderConfiguration(BaseModel):
                 ProviderModelCredential.tenant_id == self.tenant_id,
                 ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                 ProviderModelCredential.model_name == model,
-                ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                ProviderModelCredential.model_type == model_type,
             )
 
             credential_record = session.execute(stmt).scalar_one_or_none()
@@ -793,7 +793,7 @@ class ProviderConfiguration(BaseModel):
             ProviderModelCredential.tenant_id == self.tenant_id,
             ProviderModelCredential.provider_name.in_(self._get_provider_names()),
             ProviderModelCredential.model_name == model,
-            ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+            ProviderModelCredential.model_type == model_type,
             ProviderModelCredential.credential_name == credential_name,
         )
         if exclude_id:
@@ -869,7 +869,7 @@ class ProviderConfiguration(BaseModel):
                         ProviderModelCredential.tenant_id == self.tenant_id,
                         ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                         ProviderModelCredential.model_name == model,
-                        ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                        ProviderModelCredential.model_type == model_type,
                     )
                     credential_record = s.execute(stmt).scalar_one_or_none()
                     original_credentials = (
@@ -938,7 +938,7 @@ class ProviderConfiguration(BaseModel):
                     tenant_id=self.tenant_id,
                     provider_name=self.provider.provider,
                     model_name=model,
-                    model_type=model_type.to_origin_model_type(),
+                    model_type=model_type,
                     encrypted_config=json.dumps(credentials),
                     credential_name=credential_name,
                 )
@@ -951,7 +951,7 @@ class ProviderConfiguration(BaseModel):
                         tenant_id=self.tenant_id,
                         provider_name=self.provider.provider,
                         model_name=model,
-                        model_type=model_type.to_origin_model_type(),
+                        model_type=model_type,
                         credential_id=credential.id,
                         is_valid=True,
                     )
@@ -1006,7 +1006,7 @@ class ProviderConfiguration(BaseModel):
                 ProviderModelCredential.tenant_id == self.tenant_id,
                 ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                 ProviderModelCredential.model_name == model,
-                ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                ProviderModelCredential.model_type == model_type,
             )
             credential_record = session.execute(stmt).scalar_one_or_none()
             if not credential_record:
@@ -1051,7 +1051,7 @@ class ProviderConfiguration(BaseModel):
                 ProviderModelCredential.tenant_id == self.tenant_id,
                 ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                 ProviderModelCredential.model_name == model,
-                ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                ProviderModelCredential.model_type == model_type,
             )
             credential_record = session.execute(stmt).scalar_one_or_none()
             if not credential_record:
@@ -1084,7 +1084,7 @@ class ProviderConfiguration(BaseModel):
                     ProviderModelCredential.tenant_id == self.tenant_id,
                     ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                     ProviderModelCredential.model_name == model,
-                    ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                    ProviderModelCredential.model_type == model_type,
                 )
                 available_credentials_count = session.execute(count_stmt).scalar() or 0
                 session.delete(credential_record)
@@ -1124,7 +1124,7 @@ class ProviderConfiguration(BaseModel):
                 ProviderModelCredential.tenant_id == self.tenant_id,
                 ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                 ProviderModelCredential.model_name == model,
-                ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                ProviderModelCredential.model_type == model_type,
             )
             credential_record = session.execute(stmt).scalar_one_or_none()
             if not credential_record:
@@ -1139,7 +1139,7 @@ class ProviderConfiguration(BaseModel):
                     tenant_id=self.tenant_id,
                     provider_name=self.provider.provider,
                     model_name=model,
-                    model_type=model_type.to_origin_model_type(),
+                    model_type=model_type,
                     is_valid=True,
                     credential_id=credential_id,
                 )
@@ -1175,7 +1175,7 @@ class ProviderConfiguration(BaseModel):
                 ProviderModelCredential.tenant_id == self.tenant_id,
                 ProviderModelCredential.provider_name.in_(self._get_provider_names()),
                 ProviderModelCredential.model_name == model,
-                ProviderModelCredential.model_type == model_type.to_origin_model_type(),
+                ProviderModelCredential.model_type == model_type,
             )
             credential_record = session.execute(stmt).scalar_one_or_none()
             if not credential_record:
@@ -1231,7 +1231,7 @@ class ProviderConfiguration(BaseModel):
         stmt = select(ProviderModelSetting).where(
             ProviderModelSetting.tenant_id == self.tenant_id,
             ProviderModelSetting.provider_name.in_(self._get_provider_names()),
-            ProviderModelSetting.model_type == model_type.to_origin_model_type(),
+            ProviderModelSetting.model_type == model_type,
             ProviderModelSetting.model_name == model,
         )
         return session.execute(stmt).scalars().first()
@@ -1254,7 +1254,7 @@ class ProviderConfiguration(BaseModel):
                 model_setting = ProviderModelSetting(
                     tenant_id=self.tenant_id,
                     provider_name=self.provider.provider,
-                    model_type=model_type.to_origin_model_type(),
+                    model_type=model_type,
                     model_name=model,
                     enabled=True,
                 )
@@ -1280,7 +1280,7 @@ class ProviderConfiguration(BaseModel):
                 model_setting = ProviderModelSetting(
                     tenant_id=self.tenant_id,
                     provider_name=self.provider.provider,
-                    model_type=model_type.to_origin_model_type(),
+                    model_type=model_type,
                     model_name=model,
                     enabled=False,
                 )
@@ -1316,7 +1316,7 @@ class ProviderConfiguration(BaseModel):
             stmt = select(func.count(LoadBalancingModelConfig.id)).where(
                 LoadBalancingModelConfig.tenant_id == self.tenant_id,
                 LoadBalancingModelConfig.provider_name.in_(provider_names),
-                LoadBalancingModelConfig.model_type == model_type.to_origin_model_type(),
+                LoadBalancingModelConfig.model_type == model_type,
                 LoadBalancingModelConfig.model_name == model,
             )
             load_balancing_config_count = session.execute(stmt).scalar() or 0
@@ -1332,7 +1332,7 @@ class ProviderConfiguration(BaseModel):
                 model_setting = ProviderModelSetting(
                     tenant_id=self.tenant_id,
                     provider_name=self.provider.provider,
-                    model_type=model_type.to_origin_model_type(),
+                    model_type=model_type,
                     model_name=model,
                     load_balancing_enabled=True,
                 )
@@ -1359,7 +1359,7 @@ class ProviderConfiguration(BaseModel):
                 model_setting = ProviderModelSetting(
                     tenant_id=self.tenant_id,
                     provider_name=self.provider.provider,
-                    model_type=model_type.to_origin_model_type(),
+                    model_type=model_type,
                     model_name=model,
                     load_balancing_enabled=False,
                 )
@@ -1409,12 +1409,12 @@ class ProviderConfiguration(BaseModel):
             preferred_model_provider = s.execute(stmt).scalars().first()
 
             if preferred_model_provider:
-                preferred_model_provider.preferred_provider_type = provider_type.value
+                preferred_model_provider.preferred_provider_type = ProviderType(provider_type.value)
             else:
                 preferred_model_provider = TenantPreferredModelProvider(
                     tenant_id=self.tenant_id,
                     provider_name=self.provider.provider,
-                    preferred_provider_type=provider_type.value,
+                    preferred_provider_type=ProviderType(provider_type.value),
                 )
                 s.add(preferred_model_provider)
             s.commit()

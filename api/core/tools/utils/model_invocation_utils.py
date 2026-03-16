@@ -9,6 +9,7 @@ from decimal import Decimal
 from typing import cast
 
 from core.model_manager import ModelManager
+from core.tools.entities.tool_entities import ToolProviderType
 from dify_graph.model_runtime.entities.llm_entities import LLMResult
 from dify_graph.model_runtime.entities.message_entities import PromptMessage
 from dify_graph.model_runtime.entities.model_entities import ModelPropertyKey, ModelType
@@ -112,7 +113,7 @@ class ModelInvocationUtils:
             user_id=user_id,
             tenant_id=tenant_id,
             provider=model_instance.provider,
-            tool_type=tool_type,
+            tool_type=ToolProviderType(tool_type),
             tool_name=tool_name,
             model_parameters=json.dumps(model_parameters),
             prompt_messages=json.dumps(jsonable_encoder(prompt_messages)),

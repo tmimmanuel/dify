@@ -837,7 +837,7 @@ class WorkflowNodeExecutionModel(Base):  # This model is expected to have `offlo
     predecessor_node_id: Mapped[str | None] = mapped_column(String(255))
     node_execution_id: Mapped[str | None] = mapped_column(String(255))
     node_id: Mapped[str] = mapped_column(String(255))
-    node_type: Mapped[NodeType] = mapped_column(EnumText(NodeType, length=255))
+    node_type: Mapped[NodeType] = mapped_column(String(255))
     title: Mapped[str] = mapped_column(String(255))
     inputs: Mapped[str | None] = mapped_column(LongText)
     process_data: Mapped[str | None] = mapped_column(LongText)

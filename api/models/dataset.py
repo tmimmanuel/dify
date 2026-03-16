@@ -31,12 +31,19 @@ from .account import Account
 from .base import Base, TypeBase
 from .engine import db
 from .enums import (
+    CollectionBindingType,
     CreatorUserRole,
+    DatasetMetadataType,
+    DatasetQuerySource,
+    DatasetRuntimeMode,
     DataSourceType,
     DocumentCreatedFrom,
     DocumentDocType,
     IndexingStatus,
     ProcessRuleMode,
+    SegmentStatus,
+    SummaryStatus,
+    TidbAuthBindingStatus,
 )
 from .model import App, Tag, TagBinding, UploadFile
 from .types import AdjustedJSON, BinaryData, EnumText, LongText, StringUUID, adjusted_json_index
@@ -91,7 +98,9 @@ class Dataset(Base):
     summary_index_setting = mapped_column(AdjustedJSON, nullable=True)
     built_in_field_enabled = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("false"))
     icon_info = mapped_column(AdjustedJSON, nullable=True)
-    runtime_mode = mapped_column(sa.String(255), nullable=True, server_default=sa.text("'general'"))
+    runtime_mode = mapped_column(
+        EnumText(DatasetRuntimeMode, length=255), nullable=True, server_default=sa.text("'general'")
+    )
     pipeline_id = mapped_column(StringUUID, nullable=True)
     chunk_structure = mapped_column(sa.String(255), nullable=True)
     enable_api = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("true"))
@@ -288,35 +297,35 @@ class Dataset(Base):
                 {
                     "id": "built-in",
                     "name": BuiltInField.document_name,
-                    "type": "string",
+                    "type": DatasetMetadataType.STRING,
                 }
             )
             doc_metadata.append(
                 {
                     "id": "built-in",
                     "name": BuiltInField.uploader,
-                    "type": "string",
+                    "type": DatasetMetadataType.STRING,
                 }
             )
             doc_metadata.append(
                 {
                     "id": "built-in",
                     "name": BuiltInField.upload_date,
-                    "type": "time",
+                    "type": DatasetMetadataType.TIME,
                 }
             )
             doc_metadata.append(
                 {
                     "id": "built-in",
                     "name": BuiltInField.last_update_date,
-                    "type": "time",
+                    "type": DatasetMetadataType.TIME,
                 }
             )
             doc_metadata.append(
                 {
                     "id": "built-in",
                     "name": BuiltInField.source,
-                    "type": "string",
+                    "type": DatasetMetadataType.STRING,
                 }
             )
         return doc_metadata
@@ -757,7 +766,9 @@ class DocumentSegment(Base):
     enabled: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("true"))
     disabled_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     disabled_by = mapped_column(StringUUID, nullable=True)
-    status: Mapped[str] = mapped_column(String(255), server_default=sa.text("'waiting'"))
+    status: Mapped[SegmentStatus] = mapped_column(
+        EnumText(SegmentStatus, length=255), server_default=sa.text("'waiting'")
+    )
     created_by = mapped_column(StringUUID, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
     updated_by = mapped_column(StringUUID, nullable=True)
@@ -1027,7 +1038,7 @@ class DatasetQuery(TypeBase):
     )
     dataset_id: Mapped[str] = mapped_column(StringUUID, nullable=False)
     content: Mapped[str] = mapped_column(LongText, nullable=False)
-    source: Mapped[str] = mapped_column(String(255), nullable=False)
+    source: Mapped[DatasetQuerySource] = mapped_column(EnumText(DatasetQuerySource, length=255), nullable=False)
     source_app_id: Mapped[str | None] = mapped_column(StringUUID, nullable=True)
     created_by_role: Mapped[CreatorUserRole] = mapped_column(EnumText(CreatorUserRole, length=255), nullable=False)
     created_by: Mapped[str] = mapped_column(StringUUID, nullable=False)
@@ -1172,7 +1183,9 @@ class DatasetCollectionBinding(TypeBase):
     )
     provider_name: Mapped[str] = mapped_column(String(255), nullable=False)
     model_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    type: Mapped[str] = mapped_column(String(40), server_default=sa.text("'dataset'"), nullable=False)
+    type: Mapped[CollectionBindingType] = mapped_column(
+        EnumText(CollectionBindingType, length=40), server_default=sa.text("'dataset'"), nullable=False
+    )
     collection_name: Mapped[str] = mapped_column(String(64), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.current_timestamp(), init=False
@@ -1199,7 +1212,9 @@ class TidbAuthBinding(TypeBase):
     cluster_id: Mapped[str] = mapped_column(String(255), nullable=False)
     cluster_name: Mapped[str] = mapped_column(String(255), nullable=False)
     active: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("false"))
-    status: Mapped[str] = mapped_column(sa.String(255), nullable=False, server_default=sa.text("'CREATING'"))
+    status: Mapped[TidbAuthBindingStatus] = mapped_column(
+        EnumText(TidbAuthBindingStatus, length=255), nullable=False, server_default=sa.text("'CREATING'")
+    )
     account: Mapped[str] = mapped_column(String(255), nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
@@ -1399,7 +1414,7 @@ class DatasetMetadata(TypeBase):
     )
     tenant_id: Mapped[str] = mapped_column(StringUUID, nullable=False)
     dataset_id: Mapped[str] = mapped_column(StringUUID, nullable=False)
-    type: Mapped[str] = mapped_column(String(255), nullable=False)
+    type: Mapped[DatasetMetadataType] = mapped_column(EnumText(DatasetMetadataType, length=255), nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=sa.func.current_timestamp(), init=False
@@ -1626,7 +1641,9 @@ class DocumentSegmentSummary(Base):
     summary_index_node_id: Mapped[str] = mapped_column(String(255), nullable=True)
     summary_index_node_hash: Mapped[str] = mapped_column(String(255), nullable=True)
     tokens: Mapped[int | None] = mapped_column(sa.Integer, nullable=True)
-    status: Mapped[str] = mapped_column(String(32), nullable=False, server_default=sa.text("'generating'"))
+    status: Mapped[SummaryStatus] = mapped_column(
+        EnumText(SummaryStatus, length=32), nullable=False, server_default=sa.text("'generating'")
+    )
     error: Mapped[str] = mapped_column(LongText, nullable=True)
     enabled: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("true"))
     disabled_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

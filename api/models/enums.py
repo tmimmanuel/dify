@@ -188,3 +188,118 @@ class DocumentDocType(StrEnum):
     SYNCED_FROM_NOTION = "synced_from_notion"
     SYNCED_FROM_GITHUB = "synced_from_github"
     OTHERS = "others"
+
+
+class TagType(StrEnum):
+    """Tag type"""
+
+    KNOWLEDGE = "knowledge"
+    APP = "app"
+
+
+class DatasetMetadataType(StrEnum):
+    """Dataset metadata value type"""
+
+    STRING = "string"
+    NUMBER = "number"
+    TIME = "time"
+
+
+class SegmentStatus(StrEnum):
+    """Document segment status"""
+
+    WAITING = "waiting"
+    INDEXING = "indexing"
+    COMPLETED = "completed"
+    ERROR = "error"
+
+
+class DatasetRuntimeMode(StrEnum):
+    """Dataset runtime mode"""
+
+    GENERAL = "general"
+    RAG_PIPELINE = "rag_pipeline"
+
+
+class CollectionBindingType(StrEnum):
+    """Dataset collection binding type"""
+
+    DATASET = "dataset"
+    ANNOTATION = "annotation"
+
+
+class DatasetQuerySource(StrEnum):
+    """Dataset query source"""
+
+    HIT_TESTING = "hit_testing"
+    APP = "app"
+
+
+class TidbAuthBindingStatus(StrEnum):
+    """TiDB auth binding status"""
+
+    CREATING = "CREATING"
+    ACTIVE = "ACTIVE"
+
+
+class MessageFileBelongsTo(StrEnum):
+    """MessageFile belongs_to"""
+
+    USER = "user"
+    ASSISTANT = "assistant"
+
+
+class CredentialSourceType(StrEnum):
+    """Load balancing credential source type"""
+
+    PROVIDER = "provider"
+    CUSTOM_MODEL = "custom_model"
+
+
+class PaymentStatus(StrEnum):
+    """Provider order payment status"""
+
+    WAIT_PAY = "wait_pay"
+    PAID = "paid"
+    FAILED = "failed"
+    REFUNDED = "refunded"
+
+
+class BannerStatus(StrEnum):
+    """ExporleBanner status"""
+
+    ENABLED = "enabled"
+    DISABLED = "disabled"
+
+
+class SummaryStatus(StrEnum):
+    """Document segment summary status"""
+
+    NOT_STARTED = "not_started"
+    GENERATING = "generating"
+    COMPLETED = "completed"
+    ERROR = "error"
+
+
+class MessageChainType(StrEnum):
+    """Message chain type"""
+
+    SYSTEM = "system"
+
+
+class ProviderQuotaType(StrEnum):
+    PAID = "paid"
+    """hosted paid quota"""
+
+    FREE = "free"
+    """third-party free quota"""
+
+    TRIAL = "trial"
+    """hosted trial quota"""
+
+    @staticmethod
+    def value_of(value: str) -> "ProviderQuotaType":
+        for member in ProviderQuotaType:
+            if member.value == value:
+                return member
+        raise ValueError(f"No matching enum found for value '{value}'")

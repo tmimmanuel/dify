@@ -291,7 +291,7 @@ class ProviderManager:
         """
         stmt = select(TenantDefaultModel).where(
             TenantDefaultModel.tenant_id == tenant_id,
-            TenantDefaultModel.model_type == model_type.to_origin_model_type(),
+            TenantDefaultModel.model_type == model_type,
         )
         default_model = db.session.scalar(stmt)
 
@@ -309,7 +309,7 @@ class ProviderManager:
 
                 default_model = TenantDefaultModel(
                     tenant_id=tenant_id,
-                    model_type=model_type.to_origin_model_type(),
+                    model_type=ModelType(model_type),
                     provider_name=available_model.provider.provider,
                     model_name=available_model.model,
                 )
@@ -376,7 +376,7 @@ class ProviderManager:
             raise ValueError(f"Model {model} does not exist.")
         stmt = select(TenantDefaultModel).where(
             TenantDefaultModel.tenant_id == tenant_id,
-            TenantDefaultModel.model_type == model_type.to_origin_model_type(),
+            TenantDefaultModel.model_type == model_type,
         )
         default_model = db.session.scalar(stmt)
 
@@ -390,7 +390,7 @@ class ProviderManager:
             # create default model
             default_model = TenantDefaultModel(
                 tenant_id=tenant_id,
-                model_type=model_type.value,
+                model_type=ModelType(model_type.value),
                 provider_name=provider,
                 model_name=model,
             )

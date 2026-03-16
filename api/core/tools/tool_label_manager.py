@@ -38,7 +38,7 @@ class ToolLabelManager:
             db.session.add(
                 ToolLabelBinding(
                     tool_id=provider_id,
-                    tool_type=controller.provider_type.value,
+                    tool_type=controller.provider_type,
                     label_name=label,
                 )
             )

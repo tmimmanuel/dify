@@ -51,7 +51,7 @@ from models.dataset import (
     Pipeline,
     SegmentAttachmentBinding,
 )
-from models.enums import DataSourceType, DocumentCreatedFrom, IndexingStatus
+from models.enums import CollectionBindingType, DataSourceType, DocumentCreatedFrom, IndexingStatus, SegmentStatus
 from models.model import UploadFile
 from models.provider_ids import ModelProviderID
 from models.source import DataSourceOauthBinding
@@ -3168,7 +3168,7 @@ class SegmentService:
                 logger.exception("create segment index failed")
                 segment_document.enabled = False
                 segment_document.disabled_at = naive_utc_now()
-                segment_document.status = "error"
+                segment_document.status = SegmentStatus.ERROR
                 segment_document.error = str(e)
                 db.session.commit()
             segment = db.session.query(DocumentSegment).where(DocumentSegment.id == segment_document.id).first()
@@ -3260,7 +3260,7 @@ class SegmentService:
                     for segment_document in segment_data_list:
                         segment_document.enabled = False
                         segment_document.disabled_at = naive_utc_now()
-                        segment_document.status = "error"
+                        segment_document.status = SegmentStatus.ERROR
                         segment_document.error = str(e)
                 db.session.commit()
                 return segment_data_list
@@ -3406,7 +3406,7 @@ class SegmentService:
                 segment.index_node_hash = segment_hash
                 segment.word_count = len(content)
                 segment.tokens = tokens
-                segment.status = "completed"
+                segment.status = SegmentStatus.COMPLETED
                 segment.indexing_at = naive_utc_now()
                 segment.completed_at = naive_utc_now()
                 segment.updated_by = current_user.id
@@ -3531,7 +3531,7 @@ class SegmentService:
             logger.exception("update segment index failed")
             segment.enabled = False
             segment.disabled_at = naive_utc_now()
-            segment.status = "error"
+            segment.status = SegmentStatus.ERROR
             segment.error = str(e)
             db.session.commit()
         new_segment = db.session.query(DocumentSegment).where(DocumentSegment.id == segment.id).first()
@@ -3951,7 +3951,7 @@ class SegmentService:
 class DatasetCollectionBindingService:
     @classmethod
     def get_dataset_collection_binding(
-        cls, provider_name: str, model_name: str, collection_type: str = "dataset"
+        cls, provider_name: str, model_name: str, collection_type: CollectionBindingType = CollectionBindingType.DATASET
     ) -> DatasetCollectionBinding:
         dataset_collection_binding = (
             db.session.query(DatasetCollectionBinding)
