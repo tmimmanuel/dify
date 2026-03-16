@@ -14,6 +14,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from models.dataset import Dataset, Document
+from models.enums import IndexingStatus
 from services.dataset_service import DocumentService
 from services.errors.document import DocumentIndexingError
 
@@ -60,7 +61,7 @@ class DocumentBatchUpdateIntegrationDataFactory:
         name: str = "test_document.pdf",
         enabled: bool = True,
         archived: bool = False,
-        indexing_status: str = "completed",
+        indexing_status: IndexingStatus = IndexingStatus.COMPLETED,
         completed_at: datetime.datetime | None = None,
         position: int = 1,
         created_by: str | None = None,
@@ -84,9 +85,8 @@ class DocumentBatchUpdateIntegrationDataFactory:
         document.enabled = enabled
         document.archived = archived
         document.indexing_status = indexing_status
-        document.completed_at = (
-            completed_at if completed_at is not None else (FIXED_TIME if indexing_status == "completed" else None)
-        )
+        default_completed = FIXED_TIME if indexing_status == IndexingStatus.COMPLETED else None
+        document.completed_at = completed_at if completed_at is not None else default_completed
 
         for key, value in kwargs.items():
             setattr(document, key, value)
@@ -103,7 +103,7 @@ class DocumentBatchUpdateIntegrationDataFactory:
         document_ids: list[str],
         enabled: bool = True,
         archived: bool = False,
-        indexing_status: str = "completed",
+        indexing_status: IndexingStatus = IndexingStatus.COMPLETED,
     ) -> list[Document]:
         """Create and persist multiple documents for one dataset in a single transaction."""
         documents: list[Document] = []
@@ -243,7 +243,7 @@ class TestDatasetServiceBatchUpdateDocumentStatus:
             dataset=dataset,
             document_ids=document_ids,
             enabled=True,
-            indexing_status="completed",
+            indexing_status=IndexingStatus.COMPLETED,
         )
 
         # Act
@@ -277,7 +277,7 @@ class TestDatasetServiceBatchUpdateDocumentStatus:
             db_session_with_containers,
             dataset=dataset,
             enabled=False,
-            indexing_status="completed",
+            indexing_status=IndexingStatus.COMPLETED,
             completed_at=FIXED_TIME,
         )
 
@@ -306,7 +306,7 @@ class TestDatasetServiceBatchUpdateDocumentStatus:
             db_session_with_containers,
             dataset=dataset,
             enabled=True,
-            indexing_status="indexing",
+            indexing_status=IndexingStatus.INDEXING,
             completed_at=None,
         )
 

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from werkzeug.exceptions import NotFound
 
 from models import Account
+from models.enums import CollectionBindingType
 from models.model import MessageAnnotation
 from services.annotation_service import AppAnnotationService
 from services.app_service import AppService
@@ -968,7 +969,7 @@ class TestAnnotationService:
         collection_binding = DatasetCollectionBinding(
             provider_name="openai",
             model_name="text-embedding-ada-002",
-            type="annotation",
+            type=CollectionBindingType.ANNOTATION,
             collection_name=f"annotation_collection_{fake.uuid4()}",
         )
         collection_binding.id = str(fake.uuid4())
@@ -1028,7 +1029,7 @@ class TestAnnotationService:
         collection_binding = DatasetCollectionBinding(
             provider_name="openai",
             model_name="text-embedding-ada-002",
-            type="annotation",
+            type=CollectionBindingType.ANNOTATION,
             collection_name=f"annotation_collection_{fake.uuid4()}",
         )
         collection_binding.id = str(fake.uuid4())
@@ -1130,7 +1131,7 @@ class TestAnnotationService:
         collection_binding = DatasetCollectionBinding(
             provider_name="openai",
             model_name="text-embedding-ada-002",
-            type="annotation",
+            type=CollectionBindingType.ANNOTATION,
             collection_name=f"annotation_collection_{fake.uuid4()}",
         )
         collection_binding.id = str(fake.uuid4())
@@ -1191,7 +1192,7 @@ class TestAnnotationService:
         collection_binding = DatasetCollectionBinding(
             provider_name="openai",
             model_name="text-embedding-ada-002",
-            type="annotation",
+            type=CollectionBindingType.ANNOTATION,
             collection_name=f"annotation_collection_{fake.uuid4()}",
         )
         collection_binding.id = str(fake.uuid4())
@@ -1263,7 +1264,7 @@ class TestAnnotationService:
         collection_binding = DatasetCollectionBinding(
             provider_name="openai",
             model_name="text-embedding-ada-002",
-            type="annotation",
+            type=CollectionBindingType.ANNOTATION,
             collection_name=f"annotation_collection_{fake.uuid4()}",
         )
         collection_binding.id = str(fake.uuid4())
@@ -1327,7 +1328,7 @@ class TestAnnotationService:
         collection_binding = DatasetCollectionBinding(
             provider_name="openai",
             model_name="text-embedding-ada-002",
-            type="annotation",
+            type=CollectionBindingType.ANNOTATION,
             collection_name=f"annotation_collection_{fake.uuid4()}",
         )
         collection_binding.id = str(fake.uuid4())

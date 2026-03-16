@@ -30,6 +30,7 @@ from controllers.console.datasets.error import (
     InvalidActionError,
     InvalidMetadataError,
 )
+from models.enums import IndexingStatus
 
 
 def unwrap(func):
@@ -62,7 +63,7 @@ def document():
     return MagicMock(
         id="doc-1",
         tenant_id="tenant-1",
-        indexing_status="indexing",
+        indexing_status=IndexingStatus.INDEXING,
         data_source_type="upload_file",
         data_source_info_dict={"upload_file_id": "file-1"},
         doc_form="text_model",
@@ -407,7 +408,7 @@ class TestDocumentProcessingApi:
         api = DocumentProcessingApi()
         method = unwrap(api.patch)
 
-        doc = MagicMock(indexing_status="error", is_paused=True)
+        doc = MagicMock(indexing_status=IndexingStatus.ERROR, is_paused=True)
 
         with (
             app.test_request_context("/"),
@@ -425,7 +426,7 @@ class TestDocumentProcessingApi:
         api = DocumentProcessingApi()
         method = unwrap(api.patch)
 
-        document = MagicMock(indexing_status="paused", is_paused=True)
+        document = MagicMock(indexing_status=IndexingStatus.PAUSED, is_paused=True)
 
         with (
             app.test_request_context("/"),
@@ -443,7 +444,7 @@ class TestDocumentProcessingApi:
         api = DocumentProcessingApi()
         method = unwrap(api.patch)
 
-        document = MagicMock(indexing_status="indexing")
+        document = MagicMock(indexing_status=IndexingStatus.INDEXING)
 
         with (
             app.test_request_context("/"),
@@ -461,7 +462,7 @@ class TestDocumentProcessingApi:
         api = DocumentProcessingApi()
         method = unwrap(api.patch)
 
-        document = MagicMock(indexing_status="completed")
+        document = MagicMock(indexing_status=IndexingStatus.COMPLETED)
 
         with app.test_request_context("/"), patch.object(api, "get_document", return_value=document):
             with pytest.raises(InvalidActionError):
@@ -602,7 +603,7 @@ class TestDocumentRetryApi:
 
         payload = {"document_ids": ["doc-1"]}
 
-        doc = MagicMock(indexing_status="indexing")
+        doc = MagicMock(indexing_status=IndexingStatus.INDEXING)
 
         with (
             app.test_request_context("/", json=payload),
@@ -630,7 +631,7 @@ class TestDocumentRetryApi:
 
         payload = {"document_ids": ["doc-1"]}
 
-        document = MagicMock(indexing_status="indexing", archived=False)
+        document = MagicMock(indexing_status=IndexingStatus.INDEXING, archived=False)
 
         with (
             app.test_request_context("/", json=payload),
@@ -659,7 +660,7 @@ class TestDocumentRetryApi:
 
         payload = {"document_ids": ["doc-1"]}
 
-        document = MagicMock(indexing_status="completed", archived=False)
+        document = MagicMock(indexing_status=IndexingStatus.COMPLETED, archived=False)
 
         with (
             app.test_request_context("/", json=payload),
@@ -817,7 +818,7 @@ class TestDocumentIndexingEstimateApi:
         method = unwrap(api.get)
 
         document = MagicMock(
-            indexing_status="indexing",
+            indexing_status=IndexingStatus.INDEXING,
             data_source_type="upload_file",
             data_source_info_dict={"upload_file_id": "file-1"},
             tenant_id="tenant-1",
@@ -844,7 +845,7 @@ class TestDocumentIndexingEstimateApi:
         method = unwrap(api.get)
 
         document = MagicMock(
-            indexing_status="indexing",
+            indexing_status=IndexingStatus.INDEXING,
             data_source_type="upload_file",
             data_source_info_dict={"upload_file_id": "file-1"},
             tenant_id="tenant-1",
@@ -882,7 +883,7 @@ class TestDocumentIndexingEstimateApi:
         api = DocumentIndexingEstimateApi()
         method = unwrap(api.get)
 
-        document = MagicMock(indexing_status="completed")
+        document = MagicMock(indexing_status=IndexingStatus.COMPLETED)
 
         with app.test_request_context("/"), patch.object(api, "get_document", return_value=document):
             with pytest.raises(DocumentAlreadyFinishedError):
@@ -963,7 +964,7 @@ class TestDocumentBatchIndexingEstimateApi:
         method = unwrap(api.get)
 
         doc = MagicMock(
-            indexing_status="indexing",
+            indexing_status=IndexingStatus.INDEXING,
             data_source_type="website_crawl",
             data_source_info_dict={
                 "provider": "firecrawl",
@@ -992,7 +993,7 @@ class TestDocumentBatchIndexingEstimateApi:
         method = unwrap(api.get)
 
         doc = MagicMock(
-            indexing_status="indexing",
+            indexing_status=IndexingStatus.INDEXING,
             data_source_type="notion_import",
             data_source_info_dict={
                 "credential_id": "c1",
@@ -1020,7 +1021,7 @@ class TestDocumentBatchIndexingEstimateApi:
         method = unwrap(api.get)
 
         document = MagicMock(
-            indexing_status="indexing",
+            indexing_status=IndexingStatus.INDEXING,
             data_source_type="unknown",
             data_source_info_dict={},
             doc_form="text_model",
@@ -1130,7 +1131,7 @@ class TestDocumentProcessingApiResume:
         api = DocumentProcessingApi()
         method = unwrap(api.patch)
 
-        document = MagicMock(indexing_status="completed", is_paused=False)
+        document = MagicMock(indexing_status=IndexingStatus.COMPLETED, is_paused=False)
 
         with app.test_request_context("/"), patch.object(api, "get_document", return_value=document):
             with pytest.raises(InvalidActionError):
@@ -1348,7 +1349,7 @@ class TestDocumentIndexingEdgeCases:
         method = unwrap(api.get)
 
         document = MagicMock(
-            indexing_status="indexing",
+            indexing_status=IndexingStatus.INDEXING,
             data_source_type="upload_file",
             data_source_info_dict={"upload_file_id": "file-1"},
             tenant_id="tenant-1",

@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from dify_graph.entities.workflow_execution import WorkflowExecutionStatus
 from models import EndUser, Workflow, WorkflowAppLog, WorkflowRun
 from models.enums import CreatorUserRole
+from models.workflow import WorkflowAppLogCreatedFrom
 from services.account_service import AccountService, TenantService
 
 # Delay import of AppService to avoid circular dependency
@@ -203,7 +204,7 @@ class TestWorkflowAppService:
             graph=json.dumps({"nodes": [], "edges": []}),
             inputs=json.dumps({"input1": "test_value"}),
             outputs=json.dumps({"output1": "result_value"}),
-            status="succeeded",
+            status=WorkflowExecutionStatus.SUCCEEDED,
             elapsed_time=1.5,
             total_tokens=100,
             total_steps=3,
@@ -221,7 +222,7 @@ class TestWorkflowAppService:
             app_id=app.id,
             workflow_id=workflow.id,
             workflow_run_id=workflow_run.id,
-            created_from="service-api",
+            created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
             created_by_role=CreatorUserRole.ACCOUNT,
             created_by=account.id,
         )
@@ -342,7 +343,7 @@ class TestWorkflowAppService:
             triggered_from="app-run",
             version="1.0.0",
             graph=json.dumps({"nodes": [], "edges": []}),
-            status="succeeded",
+            status=WorkflowExecutionStatus.SUCCEEDED,
             inputs=json.dumps({"search_term": "50% discount", "input2": "other_value"}),
             outputs=json.dumps({"result": "50% discount applied", "status": "success"}),
             created_by_role=CreatorUserRole.ACCOUNT,
@@ -357,7 +358,7 @@ class TestWorkflowAppService:
             app_id=app.id,
             workflow_id=workflow.id,
             workflow_run_id=workflow_run_1.id,
-            created_from="service-api",
+            created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
             created_by_role=CreatorUserRole.ACCOUNT,
             created_by=account.id,
         )
@@ -384,7 +385,7 @@ class TestWorkflowAppService:
             triggered_from="app-run",
             version="1.0.0",
             graph=json.dumps({"nodes": [], "edges": []}),
-            status="succeeded",
+            status=WorkflowExecutionStatus.SUCCEEDED,
             inputs=json.dumps({"search_term": "test_data_value", "input2": "other_value"}),
             outputs=json.dumps({"result": "test_data_value found", "status": "success"}),
             created_by_role=CreatorUserRole.ACCOUNT,
@@ -399,7 +400,7 @@ class TestWorkflowAppService:
             app_id=app.id,
             workflow_id=workflow.id,
             workflow_run_id=workflow_run_2.id,
-            created_from="service-api",
+            created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
             created_by_role=CreatorUserRole.ACCOUNT,
             created_by=account.id,
         )
@@ -426,7 +427,7 @@ class TestWorkflowAppService:
             triggered_from="app-run",
             version="1.0.0",
             graph=json.dumps({"nodes": [], "edges": []}),
-            status="succeeded",
+            status=WorkflowExecutionStatus.SUCCEEDED,
             inputs=json.dumps({"search_term": "100% different", "input2": "other_value"}),
             outputs=json.dumps({"result": "100% different result", "status": "success"}),
             created_by_role=CreatorUserRole.ACCOUNT,
@@ -441,7 +442,7 @@ class TestWorkflowAppService:
             app_id=app.id,
             workflow_id=workflow.id,
             workflow_run_id=workflow_run_4.id,
-            created_from="service-api",
+            created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
             created_by_role=CreatorUserRole.ACCOUNT,
             created_by=account.id,
         )
@@ -488,7 +489,12 @@ class TestWorkflowAppService:
         db_session_with_containers.commit()
 
         # Create workflow runs with different statuses
-        statuses = ["succeeded", "failed", "running", "stopped"]
+        statuses = [
+            WorkflowExecutionStatus.SUCCEEDED,
+            WorkflowExecutionStatus.FAILED,
+            WorkflowExecutionStatus.RUNNING,
+            WorkflowExecutionStatus.STOPPED,
+        ]
         workflow_runs = []
         workflow_app_logs = []
 
@@ -511,7 +517,11 @@ class TestWorkflowAppService:
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
                 created_at=datetime.now(UTC) + timedelta(minutes=i),
-                finished_at=datetime.now(UTC) + timedelta(minutes=i + 1) if status != "running" else None,
+                finished_at=(
+                    datetime.now(UTC) + timedelta(minutes=i + 1)
+                    if status != WorkflowExecutionStatus.RUNNING
+                    else None
+                ),
             )
             db_session_with_containers.add(workflow_run)
             db_session_with_containers.commit()
@@ -521,7 +531,7 @@ class TestWorkflowAppService:
                 app_id=app.id,
                 workflow_id=workflow.id,
                 workflow_run_id=workflow_run.id,
-                created_from="service-api",
+                created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
             )
@@ -545,21 +555,21 @@ class TestWorkflowAppService:
             limit=20,
         )
         assert result_succeeded["total"] == 1
-        assert result_succeeded["data"][0].workflow_run.status == "succeeded"
+        assert result_succeeded["data"][0].workflow_run.status == WorkflowExecutionStatus.SUCCEEDED
 
         # Test failed status filter
         result_failed = service.get_paginate_workflow_app_logs(
             session=db_session_with_containers, app_model=app, status=WorkflowExecutionStatus.FAILED, page=1, limit=20
         )
         assert result_failed["total"] == 1
-        assert result_failed["data"][0].workflow_run.status == "failed"
+        assert result_failed["data"][0].workflow_run.status == WorkflowExecutionStatus.FAILED
 
         # Test running status filter
         result_running = service.get_paginate_workflow_app_logs(
             session=db_session_with_containers, app_model=app, status=WorkflowExecutionStatus.RUNNING, page=1, limit=20
         )
         assert result_running["total"] == 1
-        assert result_running["data"][0].workflow_run.status == "running"
+        assert result_running["data"][0].workflow_run.status == WorkflowExecutionStatus.RUNNING
 
     def test_get_paginate_workflow_app_logs_with_time_filtering(
         self, db_session_with_containers: Session, mock_external_service_dependencies
@@ -610,7 +620,7 @@ class TestWorkflowAppService:
                 graph=json.dumps({"nodes": [], "edges": []}),
                 inputs=json.dumps({"input": f"test_{i}"}),
                 outputs=json.dumps({"output": f"result_{i}"}),
-                status="succeeded",
+                status=WorkflowExecutionStatus.SUCCEEDED,
                 elapsed_time=1.0,
                 total_tokens=100,
                 total_steps=3,
@@ -627,7 +637,7 @@ class TestWorkflowAppService:
                 app_id=app.id,
                 workflow_id=workflow.id,
                 workflow_run_id=workflow_run.id,
-                created_from="service-api",
+                created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
             )
@@ -715,7 +725,7 @@ class TestWorkflowAppService:
                 graph=json.dumps({"nodes": [], "edges": []}),
                 inputs=json.dumps({"input": f"test_{i}"}),
                 outputs=json.dumps({"output": f"result_{i}"}),
-                status="succeeded",
+                status=WorkflowExecutionStatus.SUCCEEDED,
                 elapsed_time=1.0,
                 total_tokens=100,
                 total_steps=3,
@@ -732,7 +742,7 @@ class TestWorkflowAppService:
                 app_id=app.id,
                 workflow_id=workflow.id,
                 workflow_run_id=workflow_run.id,
-                created_from="service-api",
+                created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
             )
@@ -843,7 +853,7 @@ class TestWorkflowAppService:
                 graph=json.dumps({"nodes": [], "edges": []}),
                 inputs=json.dumps({"input": f"account_test_{i}"}),
                 outputs=json.dumps({"output": f"account_result_{i}"}),
-                status="succeeded",
+                status=WorkflowExecutionStatus.SUCCEEDED,
                 elapsed_time=1.0,
                 total_tokens=100,
                 total_steps=3,
@@ -860,7 +870,7 @@ class TestWorkflowAppService:
                 app_id=app.id,
                 workflow_id=workflow.id,
                 workflow_run_id=workflow_run.id,
-                created_from="service-api",
+                created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
             )
@@ -885,7 +895,7 @@ class TestWorkflowAppService:
                 graph=json.dumps({"nodes": [], "edges": []}),
                 inputs=json.dumps({"input": f"end_user_test_{i}"}),
                 outputs=json.dumps({"output": f"end_user_result_{i}"}),
-                status="succeeded",
+                status=WorkflowExecutionStatus.SUCCEEDED,
                 elapsed_time=1.0,
                 total_tokens=100,
                 total_steps=3,
@@ -902,7 +912,7 @@ class TestWorkflowAppService:
                 app_id=app.id,
                 workflow_id=workflow.id,
                 workflow_run_id=workflow_run.id,
-                created_from="web-app",
+                created_from=WorkflowAppLogCreatedFrom.WEB_APP,
                 created_by_role=CreatorUserRole.END_USER,
                 created_by=end_user.id,
             )
@@ -1019,7 +1029,7 @@ class TestWorkflowAppService:
             graph=json.dumps({"nodes": [], "edges": []}),
             inputs=json.dumps({"input": "test_input"}),
             outputs=json.dumps({"output": "test_output"}),
-            status="succeeded",
+            status=WorkflowExecutionStatus.SUCCEEDED,
             elapsed_time=1.0,
             total_tokens=100,
             total_steps=3,
@@ -1037,7 +1047,7 @@ class TestWorkflowAppService:
             app_id=app.id,
             workflow_id=workflow.id,
             workflow_run_id=workflow_run.id,
-            created_from="service-api",
+            created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
             created_by_role=CreatorUserRole.ACCOUNT,
             created_by=account.id,
         )
@@ -1107,7 +1117,7 @@ class TestWorkflowAppService:
             graph=json.dumps({"nodes": [], "edges": []}),
             inputs=json.dumps({"input": "test_input"}),
             outputs=json.dumps({"output": "test_output"}),
-            status="succeeded",
+            status=WorkflowExecutionStatus.SUCCEEDED,
             elapsed_time=0.0,  # Edge case: 0 elapsed time
             total_tokens=0,  # Edge case: 0 tokens
             total_steps=0,  # Edge case: 0 steps
@@ -1125,7 +1135,7 @@ class TestWorkflowAppService:
             app_id=app.id,
             workflow_id=workflow.id,
             workflow_run_id=workflow_run.id,
-            created_from="service-api",
+            created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
             created_by_role=CreatorUserRole.ACCOUNT,
             created_by=account.id,
         )
@@ -1249,7 +1259,7 @@ class TestWorkflowAppService:
         # Create multiple logs with different characteristics
         logs_data = []
         for i in range(5):
-            status = "succeeded" if i % 2 == 0 else "failed"
+            status = WorkflowExecutionStatus.SUCCEEDED if i % 2 == 0 else WorkflowExecutionStatus.FAILED
             workflow_run = WorkflowRun(
                 id=str(uuid.uuid4()),
                 tenant_id=app.tenant_id,
@@ -1261,15 +1271,27 @@ class TestWorkflowAppService:
                 graph=json.dumps({"nodes": [], "edges": []}),
                 status=status,
                 inputs=json.dumps({"input": f"test_input_{i}"}),
-                outputs=json.dumps({"output": f"test_output_{i}"}) if status == "succeeded" else None,
-                error=json.dumps({"error": f"test_error_{i}"}) if status == "failed" else None,
+                outputs=(
+                    json.dumps({"output": f"test_output_{i}"})
+                    if status == WorkflowExecutionStatus.SUCCEEDED
+                    else None
+                ),
+                error=(
+                    json.dumps({"error": f"test_error_{i}"})
+                    if status == WorkflowExecutionStatus.FAILED
+                    else None
+                ),
                 elapsed_time=1.5,
                 total_tokens=100,
                 total_steps=3,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
                 created_at=datetime.now(UTC) + timedelta(minutes=i),
-                finished_at=datetime.now(UTC) + timedelta(minutes=i + 1) if status == "succeeded" else None,
+                finished_at=(
+                    datetime.now(UTC) + timedelta(minutes=i + 1)
+                    if status == WorkflowExecutionStatus.SUCCEEDED
+                    else None
+                ),
             )
             db_session_with_containers.add(workflow_run)
             db_session_with_containers.flush()
@@ -1279,7 +1301,7 @@ class TestWorkflowAppService:
                 app_id=app.id,
                 workflow_id=workflow.id,
                 workflow_run_id=workflow_run.id,
-                created_from="service-api",
+                created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
             )
@@ -1349,7 +1371,13 @@ class TestWorkflowAppService:
         # Create 50 logs to test performance with larger datasets
         logs_data = []
         for i in range(50):
-            status = "succeeded" if i % 3 == 0 else "failed" if i % 3 == 1 else "running"
+            status = (
+                WorkflowExecutionStatus.SUCCEEDED
+                if i % 3 == 0
+                else WorkflowExecutionStatus.FAILED
+                if i % 3 == 1
+                else WorkflowExecutionStatus.RUNNING
+            )
             workflow_run = WorkflowRun(
                 id=str(uuid.uuid4()),
                 tenant_id=app.tenant_id,
@@ -1361,15 +1389,27 @@ class TestWorkflowAppService:
                 graph=json.dumps({"nodes": [], "edges": []}),
                 status=status,
                 inputs=json.dumps({"input": f"performance_test_input_{i}", "index": i}),
-                outputs=json.dumps({"output": f"performance_test_output_{i}"}) if status == "succeeded" else None,
-                error=json.dumps({"error": f"performance_test_error_{i}"}) if status == "failed" else None,
+                outputs=(
+                    json.dumps({"output": f"performance_test_output_{i}"})
+                    if status == WorkflowExecutionStatus.SUCCEEDED
+                    else None
+                ),
+                error=(
+                    json.dumps({"error": f"performance_test_error_{i}"})
+                    if status == WorkflowExecutionStatus.FAILED
+                    else None
+                ),
                 elapsed_time=1.5,
                 total_tokens=100,
                 total_steps=3,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
                 created_at=datetime.now(UTC) + timedelta(minutes=i),
-                finished_at=datetime.now(UTC) + timedelta(minutes=i + 1) if status != "running" else None,
+                finished_at=(
+                    datetime.now(UTC) + timedelta(minutes=i + 1)
+                    if status != WorkflowExecutionStatus.RUNNING
+                    else None
+                ),
             )
             db_session_with_containers.add(workflow_run)
             db_session_with_containers.flush()
@@ -1379,7 +1419,7 @@ class TestWorkflowAppService:
                 app_id=app.id,
                 workflow_id=workflow.id,
                 workflow_run_id=workflow_run.id,
-                created_from="service-api",
+                created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
                 created_by_role=CreatorUserRole.ACCOUNT,
                 created_by=account.id,
             )
@@ -1462,7 +1502,7 @@ class TestWorkflowAppService:
                     triggered_from="app-run",
                     version="1.0.0",
                     graph=json.dumps({"nodes": [], "edges": []}),
-                    status="succeeded",
+                    status=WorkflowExecutionStatus.SUCCEEDED,
                     inputs=json.dumps({"input": f"tenant_{i}_input_{j}"}),
                     outputs=json.dumps({"output": f"tenant_{i}_output_{j}"}),
                     elapsed_time=1.5,
@@ -1481,7 +1521,7 @@ class TestWorkflowAppService:
                     app_id=app.id,
                     workflow_id=workflow.id,
                     workflow_run_id=workflow_run.id,
-                    created_from="service-api",
+                    created_from=WorkflowAppLogCreatedFrom.SERVICE_API,
                     created_by_role=CreatorUserRole.ACCOUNT,
                     created_by=account.id,
                 )

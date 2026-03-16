@@ -309,7 +309,7 @@ class ProviderManager:
 
                 default_model = TenantDefaultModel(
                     tenant_id=tenant_id,
-                    model_type=ModelType(model_type),
+                    model_type=model_type,
                     provider_name=available_model.provider.provider,
                     model_name=available_model.model,
                 )
@@ -390,7 +390,7 @@ class ProviderManager:
             # create default model
             default_model = TenantDefaultModel(
                 tenant_id=tenant_id,
-                model_type=ModelType(model_type.value),
+                model_type=model_type,
                 provider_name=provider,
                 model_name=model,
             )

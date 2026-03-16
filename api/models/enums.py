@@ -104,6 +104,8 @@ class DataSourceType(StrEnum):
     UPLOAD_FILE = "upload_file"
     NOTION_IMPORT = "notion_import"
     WEBSITE_CRAWL = "website_crawl"
+    LOCAL_FILE = "local_file"
+    ONLINE_DOCUMENT = "online_document"
 
 
 class ProcessRuleMode(StrEnum):
@@ -122,6 +124,7 @@ class IndexingStatus(StrEnum):
     CLEANING = "cleaning"
     SPLITTING = "splitting"
     INDEXING = "indexing"
+    PAUSED = "paused"
     COMPLETED = "completed"
     ERROR = "error"
 

@@ -314,7 +314,7 @@ class RagPipelineTransformService:
             if not data_source_info_dict:
                 continue
             if document.data_source_type == DataSourceType.UPLOAD_FILE:
-                document.data_source_type = "local_file"  # type: ignore[assignment]  # pipeline transform value
+                document.data_source_type = DataSourceType.LOCAL_FILE
                 file_id = data_source_info_dict.get("upload_file_id")
                 if file_id:
                     file = db.session.query(UploadFile).where(UploadFile.id == file_id).first()
@@ -344,7 +344,7 @@ class RagPipelineTransformService:
                         db.session.add(document)
                         db.session.add(document_pipeline_execution_log)
             elif document.data_source_type == DataSourceType.NOTION_IMPORT:
-                document.data_source_type = "online_document"  # type: ignore[assignment]  # pipeline transform value
+                document.data_source_type = DataSourceType.ONLINE_DOCUMENT
                 data_source_info = json.dumps(
                     {
                         "workspace_id": data_source_info_dict.get("notion_workspace_id"),

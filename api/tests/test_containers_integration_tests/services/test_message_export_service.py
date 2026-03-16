@@ -7,6 +7,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from models.account import Account, Tenant, TenantAccountJoin, TenantAccountRole
+from models.enums import FeedbackFromSource
 from models.model import (
     App,
     AppAnnotationHitHistory,
@@ -173,7 +174,7 @@ class TestAppMessageExportServiceIntegration:
             conversation_id=conversation.id,
             message_id=first_message.id,
             rating="like",
-            from_source="user",
+            from_source=FeedbackFromSource.USER,
             content="first",
             from_end_user_id=conversation.from_end_user_id,
         )
@@ -182,7 +183,7 @@ class TestAppMessageExportServiceIntegration:
             conversation_id=conversation.id,
             message_id=first_message.id,
             rating="dislike",
-            from_source="user",
+            from_source=FeedbackFromSource.USER,
             content="second",
             from_end_user_id=conversation.from_end_user_id,
         )
@@ -191,7 +192,7 @@ class TestAppMessageExportServiceIntegration:
             conversation_id=conversation.id,
             message_id=first_message.id,
             rating="like",
-            from_source="admin",
+            from_source=FeedbackFromSource.ADMIN,
             content="should-be-filtered",
             from_account_id=str(uuid.uuid4()),
         )

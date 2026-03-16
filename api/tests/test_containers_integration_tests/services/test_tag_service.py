@@ -9,6 +9,7 @@ from werkzeug.exceptions import NotFound
 
 from models import Account, Tenant, TenantAccountJoin, TenantAccountRole
 from models.dataset import Dataset
+from models.enums import TagType
 from models.model import App, Tag, TagBinding
 from services.tag_service import TagService
 
@@ -325,7 +326,7 @@ class TestTagService:
         # Create tags with special characters in names
         tag_with_percent = Tag(
             name="50% discount",
-            type="app",
+            type=TagType.APP,
             tenant_id=tenant.id,
             created_by=account.id,
         )
@@ -334,7 +335,7 @@ class TestTagService:
 
         tag_with_underscore = Tag(
             name="test_data_tag",
-            type="app",
+            type=TagType.APP,
             tenant_id=tenant.id,
             created_by=account.id,
         )
@@ -343,7 +344,7 @@ class TestTagService:
 
         tag_with_backslash = Tag(
             name="path\\to\\tag",
-            type="app",
+            type=TagType.APP,
             tenant_id=tenant.id,
             created_by=account.id,
         )
@@ -353,7 +354,7 @@ class TestTagService:
         # Create tag that should NOT match
         tag_no_match = Tag(
             name="100% different",
-            type="app",
+            type=TagType.APP,
             tenant_id=tenant.id,
             created_by=account.id,
         )

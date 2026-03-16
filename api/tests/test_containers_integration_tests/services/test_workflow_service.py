@@ -12,6 +12,7 @@ import pytest
 from faker import Faker
 from sqlalchemy.orm import Session
 
+from dify_graph.enums import WorkflowNodeExecutionStatus
 from models import Account, App, Workflow
 from models.model import AppMode
 from models.workflow import WorkflowType
@@ -170,7 +171,7 @@ class TestWorkflowService:
         node_execution.node_id = "test-node-1"
         node_execution.node_type = "start"
         node_execution.title = "Test Node"  # Required field
-        node_execution.status = "succeeded"
+        node_execution.status = WorkflowNodeExecutionStatus.SUCCEEDED
         node_execution.created_by_role = CreatorUserRole.ACCOUNT  # Required field
         node_execution.created_by = account.id  # Required field
         node_execution.created_at = fake.date_time_this_year()
@@ -187,7 +188,7 @@ class TestWorkflowService:
         assert result is not None
         assert result.node_id == "test-node-1"
         assert result.workflow_id == workflow.id
-        assert result.status == "succeeded"
+        assert result.status == WorkflowNodeExecutionStatus.SUCCEEDED
 
     def test_get_node_last_run_not_found(self, db_session_with_containers: Session):
         """

@@ -1651,7 +1651,10 @@ class DocumentService:
     @staticmethod
     def get_error_documents_by_dataset_id(dataset_id: str) -> Sequence[Document]:
         documents = db.session.scalars(
-            select(Document).where(Document.dataset_id == dataset_id, Document.indexing_status.in_(["error", "paused"]))
+            select(Document).where(
+                Document.dataset_id == dataset_id,
+                Document.indexing_status.in_([IndexingStatus.ERROR, IndexingStatus.PAUSED]),
+            )
         ).all()
         return documents
 

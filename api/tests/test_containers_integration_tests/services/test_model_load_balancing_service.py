@@ -5,6 +5,7 @@ from faker import Faker
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from dify_graph.model_runtime.entities.model_entities import ModelType
 from models.account import TenantAccountJoin, TenantAccountRole
 from models.model import Account, Tenant
 from models.provider import LoadBalancingModelConfig, Provider, ProviderModelSetting
@@ -146,7 +147,7 @@ class TestModelLoadBalancingService:
             tenant_id=tenant_id,
             provider_name="openai",
             model_name="gpt-3.5-turbo",
-            model_type="llm",  # Use the ModelType enum value that matches the query
+            model_type=ModelType.LLM,
             enabled=True,
             load_balancing_enabled=False,
         )
@@ -182,7 +183,7 @@ class TestModelLoadBalancingService:
         # Act: Execute the method under test
         service = ModelLoadBalancingService()
         service.enable_model_load_balancing(
-            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type="llm"
+            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type=ModelType.LLM
         )
 
         # Assert: Verify the expected outcomes
@@ -225,7 +226,7 @@ class TestModelLoadBalancingService:
         # Act: Execute the method under test
         service = ModelLoadBalancingService()
         service.disable_model_load_balancing(
-            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type="llm"
+            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type=ModelType.LLM
         )
 
         # Assert: Verify the expected outcomes
@@ -267,7 +268,7 @@ class TestModelLoadBalancingService:
         service = ModelLoadBalancingService()
         with pytest.raises(ValueError) as exc_info:
             service.enable_model_load_balancing(
-                tenant_id=tenant.id, provider="nonexistent_provider", model="gpt-3.5-turbo", model_type="llm"
+                tenant_id=tenant.id, provider="nonexistent_provider", model="gpt-3.5-turbo", model_type=ModelType.LLM
             )
 
         # Verify correct error message
@@ -303,7 +304,7 @@ class TestModelLoadBalancingService:
             tenant_id=tenant.id,
             provider_name="openai",
             model_name="gpt-3.5-turbo",
-            model_type="llm",  # Use the ModelType enum value that matches the query
+            model_type=ModelType.LLM,
             name="config1",
             encrypted_config='{"api_key": "test_key"}',
             enabled=True,
@@ -344,7 +345,7 @@ class TestModelLoadBalancingService:
         # Act: Execute the method under test
         service = ModelLoadBalancingService()
         is_enabled, configs = service.get_load_balancing_configs(
-            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type="llm"
+            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type=ModelType.LLM
         )
 
         # Assert: Verify the expected outcomes
@@ -386,7 +387,7 @@ class TestModelLoadBalancingService:
         service = ModelLoadBalancingService()
         with pytest.raises(ValueError) as exc_info:
             service.get_load_balancing_configs(
-                tenant_id=tenant.id, provider="nonexistent_provider", model="gpt-3.5-turbo", model_type="llm"
+                tenant_id=tenant.id, provider="nonexistent_provider", model="gpt-3.5-turbo", model_type=ModelType.LLM
             )
 
         # Verify correct error message
@@ -422,7 +423,7 @@ class TestModelLoadBalancingService:
             tenant_id=tenant.id,
             provider_name="openai",
             model_name="gpt-3.5-turbo",
-            model_type="llm",  # Use the ModelType enum value that matches the query
+            model_type=ModelType.LLM,
             name="config1",
             encrypted_config='{"api_key": "test_key"}',
             enabled=True,
@@ -448,7 +449,7 @@ class TestModelLoadBalancingService:
         # Act: Execute the method under test
         service = ModelLoadBalancingService()
         is_enabled, configs = service.get_load_balancing_configs(
-            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type="llm"
+            tenant_id=tenant.id, provider="openai", model="gpt-3.5-turbo", model_type=ModelType.LLM
         )
 
         # Assert: Verify the expected outcomes

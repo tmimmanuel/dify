@@ -965,7 +965,7 @@ class DocumentProcessingApi(DocumentResource):
                 db.session.commit()
 
             case "resume":
-                if document.indexing_status not in {"paused", IndexingStatus.ERROR}:
+                if document.indexing_status not in {IndexingStatus.PAUSED, IndexingStatus.ERROR}:
                     raise InvalidActionError("Document not in paused or error state.")
 
                 document.paused_by = None
