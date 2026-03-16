@@ -41,6 +41,7 @@ from fields.document_fields import (
 from libs.datetime_utils import naive_utc_now
 from libs.login import current_account_with_tenant, login_required
 from models import DatasetProcessRule, Document, DocumentSegment, UploadFile
+from models.enums import IndexingStatus
 from models.dataset import DocumentPipelineExecutionLog
 from services.dataset_service import DatasetService, DocumentService
 from services.entities.knowledge_entities.knowledge_entities import KnowledgeConfig, ProcessRule, RetrievalModel
@@ -955,7 +956,7 @@ class DocumentProcessingApi(DocumentResource):
 
         match action:
             case "pause":
-                if document.indexing_status != "indexing":
+                if document.indexing_status != IndexingStatus.INDEXING:
                     raise InvalidActionError("Document not in indexing state.")
 
                 document.paused_by = current_user.id
@@ -964,7 +965,7 @@ class DocumentProcessingApi(DocumentResource):
                 db.session.commit()
 
             case "resume":
-                if document.indexing_status not in {"paused", "error"}:
+                if document.indexing_status not in {"paused", IndexingStatus.ERROR}:
                     raise InvalidActionError("Document not in paused or error state.")
 
                 document.paused_by = None
@@ -1169,7 +1170,7 @@ class DocumentRetryApi(DocumentResource):
                     raise ArchivedDocumentImmutableError()
 
                 # 400 if document is completed
-                if document.indexing_status == "completed":
+                if document.indexing_status == IndexingStatus.COMPLETED:
                     raise DocumentAlreadyFinishedError()
                 retry_documents.append(document)
             except Exception:

@@ -138,7 +138,7 @@ class TestDisableSegmentsFromIndexTask:
         document.data_source_info = '{"upload_file_id": "test_file_id"}'
         document.batch = fake.uuid4()
         document.name = f"Test Document {fake.word()}.txt"
-        document.created_from = "upload_file"
+        document.created_from = "web"
         document.created_by = account.id
         document.created_api_request_id = fake.uuid4()
         document.processing_started_at = fake.date_time_this_year()

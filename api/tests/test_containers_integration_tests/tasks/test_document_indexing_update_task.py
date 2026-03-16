@@ -75,7 +75,7 @@ class TestDocumentIndexingUpdateTask:
             data_source_type="upload_file",
             batch="test_batch",
             name=fake.file_name(),
-            created_from="upload_file",
+            created_from="web",
             created_by=account.id,
             indexing_status="waiting",
             enabled=True,

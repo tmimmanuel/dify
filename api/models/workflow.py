@@ -28,7 +28,7 @@ from dify_graph.constants import (
 )
 from dify_graph.entities.graph_config import NodeConfigDict, NodeConfigDictAdapter
 from dify_graph.entities.pause_reason import HumanInputRequired, PauseReason, PauseReasonType, SchedulingPause
-from dify_graph.enums import NodeType, WorkflowExecutionStatus
+from dify_graph.enums import NodeType, WorkflowExecutionStatus, WorkflowNodeExecutionStatus
 from dify_graph.file.constants import maybe_file_object
 from dify_graph.file.models import File
 from dify_graph.variables import utils as variable_utils
@@ -838,12 +838,14 @@ class WorkflowNodeExecutionModel(Base):  # This model is expected to have `offlo
     predecessor_node_id: Mapped[str | None] = mapped_column(String(255))
     node_execution_id: Mapped[str | None] = mapped_column(String(255))
     node_id: Mapped[str] = mapped_column(String(255))
-    node_type: Mapped[str] = mapped_column(String(255))
+    node_type: Mapped[NodeType] = mapped_column(EnumText(NodeType, length=255))
     title: Mapped[str] = mapped_column(String(255))
     inputs: Mapped[str | None] = mapped_column(LongText)
     process_data: Mapped[str | None] = mapped_column(LongText)
     outputs: Mapped[str | None] = mapped_column(LongText)
-    status: Mapped[str] = mapped_column(String(255))
+    status: Mapped[WorkflowNodeExecutionStatus] = mapped_column(
+        EnumText(WorkflowNodeExecutionStatus, length=255)
+    )
     error: Mapped[str | None] = mapped_column(LongText)
     elapsed_time: Mapped[float] = mapped_column(sa.Float, server_default=sa.text("0"))
     execution_metadata: Mapped[str | None] = mapped_column(LongText)
@@ -1131,7 +1133,9 @@ class WorkflowAppLog(TypeBase):
     app_id: Mapped[str] = mapped_column(StringUUID)
     workflow_id: Mapped[str] = mapped_column(StringUUID, nullable=False)
     workflow_run_id: Mapped[str] = mapped_column(StringUUID)
-    created_from: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_from: Mapped[WorkflowAppLogCreatedFrom] = mapped_column(
+        EnumText(WorkflowAppLogCreatedFrom, length=255), nullable=False
+    )
     created_by_role: Mapped[CreatorUserRole] = mapped_column(EnumText(CreatorUserRole, length=255), nullable=False)
     created_by: Mapped[str] = mapped_column(StringUUID, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
@@ -1211,10 +1215,14 @@ class WorkflowArchiveLog(TypeBase):
 
     log_id: Mapped[str | None] = mapped_column(StringUUID, nullable=True)
     log_created_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    log_created_from: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    log_created_from: Mapped[WorkflowAppLogCreatedFrom | None] = mapped_column(
+        EnumText(WorkflowAppLogCreatedFrom, length=255), nullable=True
+    )
 
     run_version: Mapped[str] = mapped_column(String(255), nullable=False)
-    run_status: Mapped[str] = mapped_column(String(255), nullable=False)
+    run_status: Mapped[WorkflowExecutionStatus] = mapped_column(
+        EnumText(WorkflowExecutionStatus, length=255), nullable=False
+    )
     run_triggered_from: Mapped[WorkflowRunTriggeredFrom] = mapped_column(
         EnumText(WorkflowRunTriggeredFrom, length=255), nullable=False
     )

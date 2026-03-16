@@ -162,7 +162,7 @@ class TestDeleteSegmentFromIndexTask:
         document.enabled = kwargs.get("enabled", True)
         document.archived = kwargs.get("archived", False)
         document.updated_at = fake.date_time_this_year()
-        document.doc_type = kwargs.get("doc_type", "text")
+        document.doc_type = kwargs.get("doc_type", "others")
         document.doc_metadata = kwargs.get("doc_metadata", {})
         document.doc_form = kwargs.get("doc_form", IndexStructureType.PARAGRAPH_INDEX)
         document.doc_language = kwargs.get("doc_language", "en")

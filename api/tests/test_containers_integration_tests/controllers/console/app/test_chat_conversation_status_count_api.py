@@ -75,7 +75,7 @@ def _create_conversation(db_session: Session, app_id: str, account_id: str) -> C
         inputs={},
         status="normal",
         mode=AppMode.CHAT,
-        from_source=CreatorUserRole.ACCOUNT,
+        from_source="console",
         from_account_id=account_id,
     )
     db_session.add(conversation)
@@ -124,7 +124,7 @@ def _create_message(
         answer_price_unit=0.001,
         currency="USD",
         status="normal",
-        from_source=CreatorUserRole.ACCOUNT,
+        from_source="console",
         from_account_id=account_id,
         workflow_run_id=workflow_run_id,
         inputs={"query": "Hello"},

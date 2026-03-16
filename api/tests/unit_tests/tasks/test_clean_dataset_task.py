@@ -185,7 +185,7 @@ class TestErrorHandling:
             indexing_technique="high_quality",
             index_struct='{"type": "paragraph"}',
             collection_binding_id=collection_binding_id,
-            doc_form="paragraph_index",
+            doc_form="text_model",
         )
 
         # Assert
@@ -230,7 +230,7 @@ class TestPipelineAndWorkflowDeletion:
             indexing_technique="high_quality",
             index_struct='{"type": "paragraph"}',
             collection_binding_id=collection_binding_id,
-            doc_form="paragraph_index",
+            doc_form="text_model",
             pipeline_id=pipeline_id,
         )
 
@@ -266,7 +266,7 @@ class TestPipelineAndWorkflowDeletion:
             indexing_technique="high_quality",
             index_struct='{"type": "paragraph"}',
             collection_binding_id=collection_binding_id,
-            doc_form="paragraph_index",
+            doc_form="text_model",
             pipeline_id=None,
         )
 
@@ -322,7 +322,7 @@ class TestSegmentAttachmentCleanup:
             indexing_technique="high_quality",
             index_struct='{"type": "paragraph"}',
             collection_binding_id=collection_binding_id,
-            doc_form="paragraph_index",
+            doc_form="text_model",
         )
 
         # Assert
@@ -367,7 +367,7 @@ class TestSegmentAttachmentCleanup:
             indexing_technique="high_quality",
             index_struct='{"type": "paragraph"}',
             collection_binding_id=collection_binding_id,
-            doc_form="paragraph_index",
+            doc_form="text_model",
         )
 
         # Assert - storage delete was attempted
@@ -409,7 +409,7 @@ class TestEdgeCases:
             indexing_technique="high_quality",
             index_struct='{"type": "paragraph"}',
             collection_binding_id=collection_binding_id,
-            doc_form="paragraph_index",
+            doc_form="text_model",
         )
 
         # Assert
@@ -453,7 +453,7 @@ class TestIndexProcessorParameters:
             indexing_technique=indexing_technique,
             index_struct=index_struct,
             collection_binding_id=collection_binding_id,
-            doc_form="paragraph_index",
+            doc_form="text_model",
         )
 
         # Assert

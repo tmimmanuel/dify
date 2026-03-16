@@ -263,7 +263,7 @@ class TestGetAvailableDatasetsIntegration:
             tenant_id=tenant.id,
             name=fake.company(),
             provider="external",  # External provider
-            data_source_type="external",
+            data_source_type="upload_file",
             created_by=account.id,
         )
         db_session_with_containers.add(dataset)

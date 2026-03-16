@@ -165,7 +165,7 @@ class TestWorkflowRunService:
             inputs={},
             status="normal",
             mode="chat",
-            from_source=CreatorUserRole.ACCOUNT,
+            from_source="console",
             from_account_id=account.id,
         )
         db_session_with_containers.add(conversation)
@@ -186,7 +186,7 @@ class TestWorkflowRunService:
         message.answer_price_unit = 0.001
         message.currency = "USD"
         message.status = "normal"
-        message.from_source = CreatorUserRole.ACCOUNT
+        message.from_source = "console"
         message.from_account_id = account.id
         message.workflow_run_id = workflow_run.id
         message.inputs = {"input": "test input"}
@@ -472,7 +472,7 @@ class TestWorkflowRunService:
             workflow_run_id=workflow_run.id,
             index=99,
             node_id="node_paused",
-            node_type="human_input",
+            node_type="human-input",
             title="Paused Node",
             inputs=json.dumps({"input": "paused"}),
             process_data=json.dumps({"process": "paused"}),

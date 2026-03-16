@@ -95,7 +95,7 @@ class TestEnableSegmentsToIndexTask:
             data_source_type="upload_file",
             batch="test_batch",
             name=fake.file_name(),
-            created_from="upload_file",
+            created_from="web",
             created_by=account.id,
             indexing_status="completed",
             enabled=True,
@@ -278,7 +278,7 @@ class TestEnableSegmentsToIndexTask:
         invalid_statuses = [
             ("disabled", {"enabled": False}),
             ("archived", {"archived": True}),
-            ("not_completed", {"indexing_status": "processing"}),
+            ("not_completed", {"indexing_status": "parsing"}),
         ]
 
         for _, status_attrs in invalid_statuses:

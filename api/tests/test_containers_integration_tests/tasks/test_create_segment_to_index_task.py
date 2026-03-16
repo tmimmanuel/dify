@@ -135,7 +135,7 @@ class TestCreateSegmentToIndexTask:
             position=1,
             data_source_type="upload_file",
             batch="test_batch",
-            created_from="upload_file",
+            created_from="web",
             created_by=account_id,
             enabled=True,
             archived=False,
@@ -295,7 +295,7 @@ class TestCreateSegmentToIndexTask:
             position=1,
             data_source_type="upload_file",
             batch="test_batch",
-            created_from="upload_file",
+            created_from="web",
             created_by=account.id,
             enabled=True,
             archived=False,
@@ -541,7 +541,7 @@ class TestCreateSegmentToIndexTask:
         - Processing completes successfully for different forms
         """
         # Arrange: Test different doc_forms
-        doc_forms = ["qa_model", "text_model", "web_model"]
+        doc_forms = ["qa_model", "text_model", "hierarchical_model"]
 
         for doc_form in doc_forms:
             # Create fresh test data for each form

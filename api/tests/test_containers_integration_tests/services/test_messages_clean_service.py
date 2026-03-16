@@ -216,7 +216,7 @@ class TestMessagesCleanServiceIntegration:
             conversation_id=message.conversation_id,
             message_id=message.id,
             rating="like",
-            from_source="api",
+            from_source="user",
             from_end_user_id=str(uuid.uuid4()),
         )
         db_session_with_containers.add(feedback)

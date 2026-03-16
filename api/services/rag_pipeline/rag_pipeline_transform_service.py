@@ -13,6 +13,7 @@ from core.rag.retrieval.retrieval_methods import RetrievalMethod
 from extensions.ext_database import db
 from factories import variable_factory
 from models.dataset import Dataset, Document, DocumentPipelineExecutionLog, Pipeline
+from models.enums import DataSourceType
 from models.model import UploadFile
 from models.workflow import Workflow, WorkflowType
 from services.entities.knowledge_entities.rag_pipeline_entities import KnowledgeConfiguration, RetrievalSetting
@@ -45,6 +46,8 @@ class RagPipelineTransformService:
         if not doc_form:
             return self._transform_to_empty_pipeline(dataset)
         retrieval_model = RetrievalSetting.model_validate(dataset.retrieval_model) if dataset.retrieval_model else None
+        if not datasource_type:
+            return self._transform_to_empty_pipeline(dataset)
         pipeline_yaml = self._get_transform_yaml(doc_form, datasource_type, indexing_technique)
         # deal dependencies
         self._deal_dependencies(pipeline_yaml, dataset.tenant_id)
@@ -310,8 +313,8 @@ class RagPipelineTransformService:
             data_source_info_dict = document.data_source_info_dict
             if not data_source_info_dict:
                 continue
-            if document.data_source_type == "upload_file":
-                document.data_source_type = "local_file"
+            if document.data_source_type == DataSourceType.UPLOAD_FILE:
+                document.data_source_type = "local_file"  # type: ignore[assignment]  # pipeline transform value
                 file_id = data_source_info_dict.get("upload_file_id")
                 if file_id:
                     file = db.session.query(UploadFile).where(UploadFile.id == file_id).first()
@@ -340,8 +343,8 @@ class RagPipelineTransformService:
                         document_pipeline_execution_log.created_at = document.created_at
                         db.session.add(document)
                         db.session.add(document_pipeline_execution_log)
-            elif document.data_source_type == "notion_import":
-                document.data_source_type = "online_document"
+            elif document.data_source_type == DataSourceType.NOTION_IMPORT:
+                document.data_source_type = "online_document"  # type: ignore[assignment]  # pipeline transform value
                 data_source_info = json.dumps(
                     {
                         "workspace_id": data_source_info_dict.get("notion_workspace_id"),
@@ -368,8 +371,8 @@ class RagPipelineTransformService:
                 document_pipeline_execution_log.created_at = document.created_at
                 db.session.add(document)
                 db.session.add(document_pipeline_execution_log)
-            elif document.data_source_type == "website_crawl":
-                document.data_source_type = "website_crawl"
+            elif document.data_source_type == DataSourceType.WEBSITE_CRAWL:
+                document.data_source_type = DataSourceType.WEBSITE_CRAWL
                 data_source_info = json.dumps(
                     {
                         "source_url": data_source_info_dict.get("url"),

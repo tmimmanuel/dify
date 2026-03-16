@@ -14,6 +14,7 @@ from core.rag.pipeline.queue import TenantIsolatedTaskQueue
 from enums.cloud_plan import CloudPlan
 from libs.datetime_utils import naive_utc_now
 from models.dataset import Dataset, Document
+from models.enums import IndexingStatus
 from services.feature_service import FeatureService
 from tasks.generate_summary_index_task import generate_summary_index_task
 
@@ -81,7 +82,7 @@ def _document_indexing(dataset_id: str, document_ids: Sequence[str]):
                     session.query(Document).where(Document.id == document_id, Document.dataset_id == dataset_id).first()
                 )
                 if document:
-                    document.indexing_status = "error"
+                    document.indexing_status = IndexingStatus.ERROR
                     document.error = str(e)
                     document.stopped_at = naive_utc_now()
                     session.add(document)
@@ -96,7 +97,7 @@ def _document_indexing(dataset_id: str, document_ids: Sequence[str]):
 
         for document in documents:
             if document:
-                document.indexing_status = "parsing"
+                document.indexing_status = IndexingStatus.PARSING
                 document.processing_started_at = naive_utc_now()
                 session.add(document)
     # Transaction committed and closed

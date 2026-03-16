@@ -28,6 +28,7 @@ from core.ops.ops_trace_manager import TraceQueueManager, TraceTask
 from core.ops.utils import measure_time
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from dify_graph.entities.workflow_node_execution import WorkflowNodeExecutionMetadataKey
+from dify_graph.enums import NodeType
 from dify_graph.model_runtime.entities.llm_entities import LLMResult
 from dify_graph.model_runtime.entities.message_entities import PromptMessage, SystemPromptMessage, UserPromptMessage
 from dify_graph.model_runtime.entities.model_entities import ModelType
@@ -468,7 +469,7 @@ class LLMGenerator:
                     "type"
                 ]
             except Exception:
-                node_type = "llm"
+                node_type = NodeType("llm")
 
         if not last_run:  # Node is not executed yet
             return LLMGenerator.__instruction_modify_common(

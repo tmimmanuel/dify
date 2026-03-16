@@ -134,7 +134,7 @@ class TestSavedMessageService:
 
         conversation = Conversation(
             app_id=app.id,
-            from_source="account" if hasattr(user, "current_tenant") else "end_user",
+            from_source="console" if hasattr(user, "current_tenant") else "api",
             from_end_user_id=user.id if not hasattr(user, "current_tenant") else None,
             from_account_id=user.id if hasattr(user, "current_tenant") else None,
             name=fake.sentence(nb_words=3),
@@ -150,7 +150,7 @@ class TestSavedMessageService:
         message = Message(
             app_id=app.id,
             conversation_id=conversation.id,
-            from_source="account" if hasattr(user, "current_tenant") else "end_user",
+            from_source="console" if hasattr(user, "current_tenant") else "api",
             from_end_user_id=user.id if not hasattr(user, "current_tenant") else None,
             from_account_id=user.id if hasattr(user, "current_tenant") else None,
             inputs={},

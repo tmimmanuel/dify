@@ -30,7 +30,14 @@ from services.entities.knowledge_entities.knowledge_entities import ParentMode, 
 from .account import Account
 from .base import Base, TypeBase
 from .engine import db
-from .enums import CreatorUserRole
+from .enums import (
+    CreatorUserRole,
+    DataSourceType,
+    DocumentCreatedFrom,
+    DocumentDocType,
+    IndexingStatus,
+    ProcessRuleMode,
+)
 from .model import App, Tag, TagBinding, UploadFile
 from .types import AdjustedJSON, BinaryData, EnumText, LongText, StringUUID, adjusted_json_index
 
@@ -65,7 +72,9 @@ class Dataset(Base):
         server_default=sa.text("'only_me'"),
         default=DatasetPermissionEnum.ONLY_ME,
     )
-    data_source_type = mapped_column(String(255))
+    data_source_type: Mapped[DataSourceType | None] = mapped_column(
+        EnumText(DataSourceType, length=255)
+    )
     indexing_technique: Mapped[str | None] = mapped_column(String(255))
     index_struct = mapped_column(LongText, nullable=True)
     created_by = mapped_column(StringUUID, nullable=False)
@@ -327,7 +336,9 @@ class DatasetProcessRule(Base):  # bug
 
     id = mapped_column(StringUUID, nullable=False, default=lambda: str(uuid4()))
     dataset_id = mapped_column(StringUUID, nullable=False)
-    mode = mapped_column(String(255), nullable=False, server_default=sa.text("'automatic'"))
+    mode: Mapped[ProcessRuleMode] = mapped_column(
+        EnumText(ProcessRuleMode, length=255), nullable=False, server_default=sa.text("'automatic'")
+    )
     rules = mapped_column(LongText, nullable=True)
     created_by = mapped_column(StringUUID, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
@@ -373,12 +384,16 @@ class Document(Base):
     tenant_id = mapped_column(StringUUID, nullable=False)
     dataset_id = mapped_column(StringUUID, nullable=False)
     position: Mapped[int] = mapped_column(sa.Integer, nullable=False)
-    data_source_type: Mapped[str] = mapped_column(String(255), nullable=False)
+    data_source_type: Mapped[DataSourceType] = mapped_column(
+        EnumText(DataSourceType, length=255), nullable=False
+    )
     data_source_info = mapped_column(LongText, nullable=True)
     dataset_process_rule_id = mapped_column(StringUUID, nullable=True)
     batch: Mapped[str] = mapped_column(String(255), nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    created_from: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_from: Mapped[DocumentCreatedFrom] = mapped_column(
+        EnumText(DocumentCreatedFrom, length=255), nullable=False
+    )
     created_by = mapped_column(StringUUID, nullable=False)
     created_api_request_id = mapped_column(StringUUID, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp())
@@ -412,7 +427,9 @@ class Document(Base):
     stopped_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     # basic fields
-    indexing_status = mapped_column(String(255), nullable=False, server_default=sa.text("'waiting'"))
+    indexing_status: Mapped[IndexingStatus] = mapped_column(
+        EnumText(IndexingStatus, length=255), nullable=False, server_default=sa.text("'waiting'")
+    )
     enabled: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("true"))
     disabled_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     disabled_by = mapped_column(StringUUID, nullable=True)
@@ -423,9 +440,13 @@ class Document(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.current_timestamp(), onupdate=func.current_timestamp()
     )
-    doc_type = mapped_column(String(40), nullable=True)
+    doc_type: Mapped[DocumentDocType | None] = mapped_column(
+        EnumText(DocumentDocType, length=40), nullable=True
+    )
     doc_metadata = mapped_column(AdjustedJSON, nullable=True)
-    doc_form = mapped_column(String(255), nullable=False, server_default=sa.text("'text_model'"))
+    doc_form: Mapped[IndexStructureType] = mapped_column(
+        EnumText(IndexStructureType, length=255), nullable=False, server_default=sa.text("'text_model'")
+    )
     doc_language = mapped_column(String(255), nullable=True)
     need_summary: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, server_default=sa.text("false"))
 

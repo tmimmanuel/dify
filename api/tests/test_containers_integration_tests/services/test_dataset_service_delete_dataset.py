@@ -87,7 +87,7 @@ class DatasetDeleteIntegrationDataFactory:
             data_source_type="upload_file",
             batch=f"batch-{uuid4()}",
             name="Document",
-            created_from="upload_file",
+            created_from="web",
             created_by=created_by,
             doc_form=doc_form,
         )

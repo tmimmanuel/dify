@@ -95,7 +95,7 @@ class TestAddDocumentToIndexTask:
             data_source_type="upload_file",
             batch="test_batch",
             name=fake.file_name(),
-            created_from="upload_file",
+            created_from="web",
             created_by=account.id,
             indexing_status="completed",
             enabled=True,
@@ -297,7 +297,7 @@ class TestAddDocumentToIndexTask:
         )
 
         # Set invalid indexing status
-        document.indexing_status = "processing"
+        document.indexing_status = "parsing"
         db_session_with_containers.commit()
 
         # Act: Execute the task

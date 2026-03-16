@@ -138,7 +138,7 @@ class TestMetadataService:
             name=fake.file_name(),
             created_from="web",
             created_by=account.id,
-            doc_form="text",
+            doc_form="text_model",
             doc_language="en",
         )
 

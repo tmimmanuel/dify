@@ -12,6 +12,7 @@ from core.db.session_factory import session_factory
 from dify_graph.nodes.knowledge_index.exc import KnowledgeIndexNodeError
 from dify_graph.repositories.index_processor_protocol import Preview, PreviewItem, QaPreview
 from models.dataset import Dataset, Document, DocumentSegment
+from models.enums import IndexingStatus
 
 from .index_processor_factory import IndexProcessorFactory
 from .processor.paragraph_index_processor import ParagraphIndexProcessor
@@ -92,7 +93,7 @@ class IndexProcessor:
 
         with session_factory.create_session() as session, session.begin():
             document.indexing_latency = indexing_end_at - indexing_start_at
-            document.indexing_status = "completed"
+            document.indexing_status = IndexingStatus.COMPLETED
             document.completed_at = datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
             document.word_count = (
                 session.query(func.sum(DocumentSegment.word_count))

@@ -168,7 +168,7 @@ class TestWorkflowService:
         node_execution.triggered_from = "single-step"  # Required field
         node_execution.index = 1  # Required field
         node_execution.node_id = "test-node-1"
-        node_execution.node_type = "test_node"
+        node_execution.node_type = "start"
         node_execution.title = "Test Node"  # Required field
         node_execution.status = "succeeded"
         node_execution.created_by_role = CreatorUserRole.ACCOUNT  # Required field

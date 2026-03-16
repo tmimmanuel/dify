@@ -39,6 +39,7 @@ from libs.datetime_utils import naive_utc_now
 from models import Account
 from models.dataset import ChildChunk, Dataset, DatasetProcessRule, DocumentSegment
 from models.dataset import Document as DatasetDocument
+from models.enums import IndexingStatus
 from models.model import UploadFile
 from services.feature_service import FeatureService
 
@@ -55,7 +56,7 @@ class IndexingRunner:
         logger.exception("consume document failed")
         document = db.session.get(DatasetDocument, document_id)
         if document:
-            document.indexing_status = "error"
+            document.indexing_status = IndexingStatus.ERROR
             error_message = getattr(error, "description", str(error))
             document.error = str(error_message)
             document.stopped_at = naive_utc_now()

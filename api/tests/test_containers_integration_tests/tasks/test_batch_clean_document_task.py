@@ -147,7 +147,7 @@ class TestBatchCleanDocumentTask:
             data_source_type="upload_file",
             data_source_info=json.dumps({"upload_file_id": str(uuid.uuid4())}),
             batch="test_batch",
-            created_from="test",
+            created_from="web",
             created_by=account.id,
             indexing_status="completed",
             doc_form="text_model",

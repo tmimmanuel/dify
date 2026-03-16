@@ -65,7 +65,7 @@ def document():
         indexing_status="indexing",
         data_source_type="upload_file",
         data_source_info_dict={"upload_file_id": "file-1"},
-        doc_form="text",
+        doc_form="text_model",
         archived=False,
         is_paused=False,
         dataset_process_rule=None,
@@ -765,7 +765,7 @@ class TestDocumentGenerateSummaryApi:
         )
 
         doc1 = MagicMock(id="doc-1", doc_form="qa_model")
-        doc2 = MagicMock(id="doc-2", doc_form="text")
+        doc2 = MagicMock(id="doc-2", doc_form="text_model")
 
         payload = {"document_list": ["doc-1", "doc-2"]}
 
@@ -821,7 +821,7 @@ class TestDocumentIndexingEstimateApi:
             data_source_type="upload_file",
             data_source_info_dict={"upload_file_id": "file-1"},
             tenant_id="tenant-1",
-            doc_form="text",
+            doc_form="text_model",
             dataset_process_rule=None,
         )
 
@@ -848,7 +848,7 @@ class TestDocumentIndexingEstimateApi:
             data_source_type="upload_file",
             data_source_info_dict={"upload_file_id": "file-1"},
             tenant_id="tenant-1",
-            doc_form="text",
+            doc_form="text_model",
             dataset_process_rule=None,
         )
 
@@ -972,7 +972,7 @@ class TestDocumentBatchIndexingEstimateApi:
                 "mode": "single",
                 "only_main_content": True,
             },
-            doc_form="text",
+            doc_form="text_model",
         )
 
         with (
@@ -1000,7 +1000,7 @@ class TestDocumentBatchIndexingEstimateApi:
                 "notion_page_id": "p1",
                 "type": "page",
             },
-            doc_form="text",
+            doc_form="text_model",
         )
 
         with (
@@ -1023,7 +1023,7 @@ class TestDocumentBatchIndexingEstimateApi:
             indexing_status="indexing",
             data_source_type="unknown",
             data_source_info_dict={},
-            doc_form="text",
+            doc_form="text_model",
         )
 
         with app.test_request_context("/"), patch.object(api, "get_batch_documents", return_value=[document]):
@@ -1352,7 +1352,7 @@ class TestDocumentIndexingEdgeCases:
             data_source_type="upload_file",
             data_source_info_dict={"upload_file_id": "file-1"},
             tenant_id="tenant-1",
-            doc_form="text",
+            doc_form="text_model",
             dataset_process_rule=None,
         )
 

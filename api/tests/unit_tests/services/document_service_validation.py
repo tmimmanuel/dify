@@ -371,7 +371,7 @@ class TestDatasetServiceCheckDocForm:
         """
         # Arrange
         dataset = DocumentValidationTestDataFactory.create_dataset_mock(doc_form="text_model")
-        doc_form = "table_model"  # Different form
+        doc_form = "qa_model"  # Different form
 
         # Act & Assert
         with pytest.raises(ValueError, match="doc_form is different from the dataset doc_form"):

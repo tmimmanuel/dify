@@ -16,6 +16,7 @@ from core.workflow.node_factory import DifyNodeFactory
 from core.workflow.workflow_entry import WorkflowEntry
 from dify_graph.entities.graph_init_params import GraphInitParams
 from dify_graph.enums import WorkflowType
+from models.enums import IndexingStatus
 from dify_graph.graph import Graph
 from dify_graph.graph_events import GraphEngineEvent, GraphRunFailedEvent
 from dify_graph.repositories.workflow_execution_repository import WorkflowExecutionRepository
@@ -293,7 +294,7 @@ class PipelineRunner(WorkflowBasedAppRunner):
                     .first()
                 )
                 if document:
-                    document.indexing_status = "error"
+                    document.indexing_status = IndexingStatus.ERROR
                     document.error = event.error or "Unknown error"
                     db.session.add(document)
                     db.session.commit()

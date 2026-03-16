@@ -10,6 +10,7 @@ from core.entities.provider_configuration import ProviderModelBundle
 from dify_graph.entities.graph_init_params import DIFY_RUN_CONTEXT_KEY
 from dify_graph.file import File, FileUploadConfig
 from dify_graph.model_runtime.entities.model_entities import AIModelEntity
+from models.enums import InvokeFrom
 
 if TYPE_CHECKING:
     from core.ops.ops_trace_manager import TraceQueueManager
@@ -18,30 +19,6 @@ if TYPE_CHECKING:
 class UserFrom(StrEnum):
     ACCOUNT = "account"
     END_USER = "end-user"
-
-
-class InvokeFrom(StrEnum):
-    SERVICE_API = "service-api"
-    WEB_APP = "web-app"
-    TRIGGER = "trigger"
-    EXPLORE = "explore"
-    DEBUGGER = "debugger"
-    PUBLISHED_PIPELINE = "published"
-    VALIDATION = "validation"
-
-    @classmethod
-    def value_of(cls, value: str) -> "InvokeFrom":
-        return cls(value)
-
-    def to_source(self) -> str:
-        source_mapping = {
-            InvokeFrom.WEB_APP: "web_app",
-            InvokeFrom.DEBUGGER: "dev",
-            InvokeFrom.EXPLORE: "explore_app",
-            InvokeFrom.TRIGGER: "trigger",
-            InvokeFrom.SERVICE_API: "api",
-        }
-        return source_mapping.get(self, "dev")
 
 
 class DifyRunContext(BaseModel):

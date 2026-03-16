@@ -475,7 +475,7 @@ class TestDisableSegmentFromIndexTask:
         - Index processor clean method is called correctly
         """
         # Test different document forms
-        doc_forms = ["text_model", "qa_model", "table_model"]
+        doc_forms = ["text_model", "qa_model", "hierarchical_model"]
 
         for doc_form in doc_forms:
             # Arrange: Create test data for each form

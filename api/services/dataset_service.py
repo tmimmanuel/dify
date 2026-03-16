@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 from werkzeug.exceptions import Forbidden, NotFound
 
 from configs import dify_config
+from models.enums import DataSourceType, DocumentCreatedFrom, IndexingStatus
 from core.db.session_factory import session_factory
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.helper.name_generator import generate_incremental_name
@@ -1793,7 +1794,7 @@ class DocumentService:
             if cache_result is not None:
                 raise ValueError("Document is being retried, please try again later")
             # retry document indexing
-            document.indexing_status = "waiting"
+            document.indexing_status = IndexingStatus.WAITING
             db.session.add(document)
             db.session.commit()
 
@@ -1812,7 +1813,7 @@ class DocumentService:
         if cache_result is not None:
             raise ValueError("Document is being synced, please try again later")
         # sync document indexing
-        document.indexing_status = "waiting"
+        document.indexing_status = IndexingStatus.WAITING
         data_source_info = document.data_source_info_dict
         if data_source_info:
             data_source_info["mode"] = "scrape"
@@ -1878,7 +1879,7 @@ class DocumentService:
 
         # if dataset is empty, update dataset data_source_type
         if not dataset.data_source_type and knowledge_config.data_source:
-            dataset.data_source_type = knowledge_config.data_source.info_list.data_source_type
+            dataset.data_source_type = DataSourceType(knowledge_config.data_source.info_list.data_source_type)
 
         if not dataset.indexing_technique:
             if knowledge_config.indexing_technique not in Dataset.INDEXING_TECHNIQUE_LIST:
@@ -2016,12 +2017,12 @@ class DocumentService:
                             if knowledge_config.duplicate and document:
                                 document.dataset_process_rule_id = dataset_process_rule.id
                                 document.updated_at = naive_utc_now()
-                                document.created_from = created_from
-                                document.doc_form = knowledge_config.doc_form
+                                document.created_from = DocumentCreatedFrom(created_from)
+                                document.doc_form = IndexStructureType(knowledge_config.doc_form)
                                 document.doc_language = knowledge_config.doc_language
                                 document.data_source_info = json.dumps(data_source_info)
                                 document.batch = batch
-                                document.indexing_status = "waiting"
+                                document.indexing_status = IndexingStatus.WAITING
                                 db.session.add(document)
                                 documents.append(document)
                                 duplicate_document_ids.append(document.id)
@@ -2601,7 +2602,7 @@ class DocumentService:
                             "only_main_content": website_info.only_main_content,
                             "mode": "crawl",
                         }
-            document.data_source_type = document_data.data_source.info_list.data_source_type
+            document.data_source_type = DataSourceType(document_data.data_source.info_list.data_source_type)
             document.data_source_info = json.dumps(data_source_info)
             document.name = file_name
 
@@ -2609,15 +2610,15 @@ class DocumentService:
         if document_data.name:
             document.name = document_data.name
         # update document to be waiting
-        document.indexing_status = "waiting"
+        document.indexing_status = IndexingStatus.WAITING
         document.completed_at = None
         document.processing_started_at = None
         document.parsing_completed_at = None
         document.cleaning_completed_at = None
         document.splitting_completed_at = None
         document.updated_at = naive_utc_now()
-        document.created_from = created_from
-        document.doc_form = document_data.doc_form
+        document.created_from = DocumentCreatedFrom(created_from)
+        document.doc_form = IndexStructureType(document_data.doc_form)
         db.session.add(document)
         db.session.commit()
         # update document segment

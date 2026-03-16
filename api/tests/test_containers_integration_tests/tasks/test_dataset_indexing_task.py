@@ -158,7 +158,7 @@ class TestDatasetIndexingTaskIntegration:
                 data_source_type="upload_file",
                 batch="test_batch",
                 name=f"doc-{position}.txt",
-                created_from="upload_file",
+                created_from="web",
                 created_by=account.id,
                 indexing_status="waiting",
                 enabled=True,

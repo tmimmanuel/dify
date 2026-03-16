@@ -80,7 +80,7 @@ class DocumentIndexingSyncTaskTestDataFactory:
             data_source_info=json.dumps(data_source_info) if data_source_info is not None else None,
             batch="test-batch",
             name=f"doc-{uuid4()}",
-            created_from="notion_import",
+            created_from="web",
             created_by=created_by,
             indexing_status=indexing_status,
             enabled=True,
