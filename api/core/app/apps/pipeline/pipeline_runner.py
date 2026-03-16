@@ -16,7 +16,6 @@ from core.workflow.node_factory import DifyNodeFactory
 from core.workflow.workflow_entry import WorkflowEntry
 from dify_graph.entities.graph_init_params import GraphInitParams
 from dify_graph.enums import WorkflowType
-from models.enums import IndexingStatus
 from dify_graph.graph import Graph
 from dify_graph.graph_events import GraphEngineEvent, GraphRunFailedEvent
 from dify_graph.repositories.workflow_execution_repository import WorkflowExecutionRepository
@@ -27,6 +26,7 @@ from dify_graph.variable_loader import VariableLoader
 from dify_graph.variables.variables import RAGPipelineVariable, RAGPipelineVariableInput
 from extensions.ext_database import db
 from models.dataset import Document, Pipeline
+from models.enums import IndexingStatus
 from models.model import EndUser
 from models.workflow import Workflow
 

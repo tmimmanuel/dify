@@ -16,7 +16,6 @@ from sqlalchemy.orm import Session
 from werkzeug.exceptions import Forbidden, NotFound
 
 from configs import dify_config
-from models.enums import DataSourceType, DocumentCreatedFrom, IndexingStatus
 from core.db.session_factory import session_factory
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.helper.name_generator import generate_incremental_name
@@ -52,6 +51,7 @@ from models.dataset import (
     Pipeline,
     SegmentAttachmentBinding,
 )
+from models.enums import DataSourceType, DocumentCreatedFrom, IndexingStatus
 from models.model import UploadFile
 from models.provider_ids import ModelProviderID
 from models.source import DataSourceOauthBinding
