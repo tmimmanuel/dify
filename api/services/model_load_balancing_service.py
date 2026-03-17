@@ -431,7 +431,7 @@ class ModelLoadBalancingService:
                     load_balancing_model_config = LoadBalancingModelConfig(
                         tenant_id=tenant_id,
                         provider_name=provider_configuration.provider.provider,
-                        model_type=ModelType(model_type_enum),
+                        model_type=model_type_enum,
                         model_name=model,
                         name=credential_record.credential_name,
                         encrypted_config=credential_record.encrypted_config,
@@ -459,7 +459,7 @@ class ModelLoadBalancingService:
                     load_balancing_model_config = LoadBalancingModelConfig(
                         tenant_id=tenant_id,
                         provider_name=provider_configuration.provider.provider,
-                        model_type=ModelType(model_type_enum),
+                        model_type=model_type_enum,
                         model_name=model,
                         name=name,
                         encrypted_config=json.dumps(credentials),
